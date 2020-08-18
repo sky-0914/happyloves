@@ -1,0 +1,33 @@
+server:
+  port: 10001
+spring:
+  application:
+    name: H2DB
+  datasource:
+
+    driver-class-name: org.h2.Driver #  驱动
+    url: jdbc:h2:mem:jpa # h2 内存数据库 内存模式连接配置 库名: jpa
+    #    schema: classpath:sql/init.sql  # 初始化数据表 DDL
+    #    data: classpath:sql/data.sql #  初始化数据 DML
+    username: shuma
+    password: shuma123
+  h2:
+    console:
+      enabled: true             #开启console 访问 默认false
+      settings:
+        trace: true             #开启h2 console 跟踪 方便调试  默认 false
+        web-allow-others: true  #允许console 远程访问 默认false
+      path: /h2-console         #h2 访问路径上下文
+  jpa:
+    database: H2
+    hibernate:
+      ddl-auto: update
+      naming:
+        #  Hibernate到5.1废除了
+        #  strategy: org.hibernate.cfg.ImprovedNamingStrategy
+        #在进行领域映射时,首字母小写，大写字母变为下划线加小写
+        physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
+        #不做修改，直接映射org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyComponentPathImpl
+    show-sql: true
+    open-in-view: true
