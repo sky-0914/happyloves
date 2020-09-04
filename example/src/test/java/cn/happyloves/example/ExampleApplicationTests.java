@@ -1,10 +1,10 @@
-package cn.happyloves.h2db;
+package cn.happyloves.example;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class H2dbApplicationTests {
+class ExampleApplicationTests {
 
     @Test
     void contextLoads() {

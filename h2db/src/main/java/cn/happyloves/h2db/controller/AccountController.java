@@ -18,7 +18,6 @@ public class AccountController {
     @Autowired
     private AccountJPA accountJPA;
 
-
     /**
      * 保存账号信息
      *
