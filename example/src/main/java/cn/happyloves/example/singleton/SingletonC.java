@@ -32,5 +32,4 @@ public class SingletonC {
         SingletonC instance2 = SingletonC.getInstance();
         System.out.println(instance1 == instance2);
     }
-
 }
