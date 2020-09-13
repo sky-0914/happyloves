@@ -4,98 +4,101 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
  * @author zc
  * @date 2020/9/10 23:20
- * StringRedisTemplate继承自RedisTemplate
- * StringRedisTemplate、RedisTemplate 两者的数据是不共通的；也就是说StringRedisTemplate只能管理StringRedisTemplate里面的数据，RedisTemplate只能管理RedisTemplate中的数据。
- * 其实他们两者之间的区别主要在于他们使用的序列化类:
- * 　RedisTemplate使用的是JdkSerializationRedisSerializer    存入数据会将数据先序列化成字节数组然后在存入Redis数据库。
- * 　StringRedisTemplate使用的是StringRedisSerializer
- * 使用时注意事项：
- * 　当你的redis数据库里面本来存的是字符串数据或者你要存取的数据就是字符串类型数据的时候，那么你就使用StringRedisTemplate即可。
- * 　但是如果你的数据是复杂的对象类型，而取出的时候又不想做任何的数据转换，直接从Redis里面取出一个对象，那么使用RedisTemplate是更好的选择。
  */
 @Component
 public class RedisUtils {
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
 
+    // ============================================== Key相关 ==============================================
     /**
-     * 获取
+     * 获取所有key，模糊查询*key*
+     * KEYS *、KEYS *key*、KEYS *key、KEYS key*
      *
-     * @param keys
-     * @return
+     * @param key 键
+     * @return 返回匹配的key集合
      */
-    public Set<String> keys(String keys) {
-        redisTemplate.discard();
-        return redisTemplate.keys(keys);
+    public Set<String> keys(String key) {
+        return redisTemplate.keys(key);
     }
 
     /**
-     * 指定缓存失效时间
+     * 指定key缓存失效时间
+     * EXPIRE key 10
      *
      * @param key  键
      * @param time 时间(秒)
-     * @return
      */
-    public boolean expire(String key, long time) {
-        try {
-            if (time > 0) {
-                redisTemplate.expire(key, time, TimeUnit.SECONDS);
-            }
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+    public void expire(String key, long time) {
+        redisTemplate.expire(key, time, TimeUnit.SECONDS);
+    }
+
+    /**
+     * 指定key到期时间
+     * EXPIREAT key 1293840000
+     *
+     * @param key  键
+     * @param date 时间
+     */
+    public void expireAt(String key, Date date) {
+        redisTemplate.expireAt(key, date);
     }
 
     /**
      * 根据key 获取过期时间
+     * ttl key
      *
      * @param key 键 不能为null
      * @return 时间(秒) 返回0代表为永久有效
      */
-    public long getExpire(String key) {
+    public Long getExpire(String key) {
         return redisTemplate.getExpire(key, TimeUnit.SECONDS);
     }
 
     /**
      * 判断key是否存在
+     * exists key
      *
      * @param key 键
      * @return true 存在 false不存在
      */
-    public boolean hasKey(String key) {
-        try {
-            return redisTemplate.hasKey(key);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+    public Boolean hasKey(String key) {
+        return redisTemplate.hasKey(key);
+    }
+
+    /**
+     * 判断多个key是否存在
+     *
+     * @param key 可以传一个值 或多个
+     * @return 返回key存在数量
+     */
+    public Long hasKeys(String... key) {
+        return redisTemplate.countExistingKeys(Arrays.asList(key));
     }
 
     /**
      * 删除缓存
+     * del key1 key2 key3
      *
      * @param key 可以传一个值 或多个
      */
-    @SuppressWarnings("unchecked")
     public void del(String... key) {
         if (key != null && key.length > 0) {
             if (key.length == 1) {
                 redisTemplate.delete(key[0]);
             } else {
-                redisTemplate.delete(CollectionUtils.arrayToList(key));
+                redisTemplate.delete(Arrays.asList(key));
             }
         }
     }
+
+    // ============================================== String相关 ==============================================
 
     /**
      * 普通缓存获取
@@ -112,16 +115,9 @@ public class RedisUtils {
      *
      * @param key   键
      * @param value 值
-     * @return true成功 false失败
      */
-    public boolean set(String key, Object value) {
-        try {
-            redisTemplate.opsForValue().set(key, value);
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+    public void set(String key, Object value) {
+        redisTemplate.opsForValue().set(key, value);
     }
 
     /**
