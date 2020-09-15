@@ -3,11 +3,14 @@ package cn.happyloves.redis.config;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.annotation.Resource;
 
@@ -25,26 +28,20 @@ import javax.annotation.Resource;
  */
 @Slf4j
 @Configuration
+@EnableTransactionManagement//开启事务
 public class BeanConfig {
-
-//    @Bean
-//    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory factory) {
-//        RedisTemplate<String, Object> template = new RedisTemplate<String, Object>();
-//
-//        template.setConnectionFactory(factory);
-//        return template;
-//    }
 
     @Resource
     private LettuceConnectionFactory lettuceConnectionFactory;
 
     @Bean
     public RedisTemplate<String, Object> redisTemplate() {//创建RedisTemplate
-
         // 配置redisTemplate
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(lettuceConnectionFactory);
         setRedisTemplate(redisTemplate);
+        //开启事务
+        redisTemplate.setEnableTransactionSupport(true);
         return redisTemplate;
     }
 

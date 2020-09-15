@@ -13,3 +13,9 @@ spring:
         max-idle: 200
         min-idle: 50
         time-between-eviction-runs: 60s
+  session:
+    store-type: redis #指定redis实现spring session
+    timeout: 60 # Session 过期时间，单位s
+    redis:
+      flush-mode: immediate # Sessions 刷新模式
+      namespace: spring-session # Namespace for keys used to store sessions.
