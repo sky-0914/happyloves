@@ -54,7 +54,7 @@ class RedisApplicationTests {
         //设置指定key的缓存时间
         redisUtils.expire("s1", 10);
         //获取指定key的剩余缓存时间
-        System.out.println(redisUtils.getExpire("s1"));
+        System.out.println(redisUtils.ttl("s1"));
         //判断key是否存在
         System.out.println(redisUtils.hasKey("s1"));
         //判断多个key是否存在

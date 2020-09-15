@@ -534,8 +534,4 @@ public class RedisUtils {
     public Long lRemove(String key, long count, Object value) {
         return redisTemplate.opsForList().remove(key, count, value);
     }
-
-    public void a() {
-        redisTemplate.opsForZSet().add();
-    }
 }
