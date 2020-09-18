@@ -22,6 +22,7 @@
         <module>h2db</module>
         <module>mongodb</module>
         <module>redis</module>
+        <module>shardingsphere</module>
     </modules>
 
 </project>
