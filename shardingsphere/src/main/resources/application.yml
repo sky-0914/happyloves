@@ -47,3 +47,4 @@ spring:
     props: #打印sql
       sql:
         show: true
+
