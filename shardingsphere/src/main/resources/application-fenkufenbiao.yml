@@ -1,0 +1,72 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    show-sql: true
+  shardingsphere:
+    datasource: # 数据源配置
+      names: shardingdb0,shardingdb1,shardingdb2 # 配置真实数据源
+      shardingdb0:
+        type: com.zaxxer.hikari.HikariDataSource # 连接池配置
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        jdbc-url: jdbc:mysql://114.116.69.230:13036/sharding_db_1?useUnicode=true&characterEncoding=utf8&autoReconnect=true&useSSL=false&allowMultiQueries=true&useAffectedRows=true&serverTimezone=Asia/Shanghai
+        username: fyzq_scm_test
+        password: r7XNMpwfHffT44Lz
+        hikari:
+          minimum-idle: 5           # 最小连接数
+          maximum-pool-size: 15     # 最大连接数
+          auto-commit: true         # 此属性控制从池返回的连接的默认自动提交行为,默认值：true
+          idle-timeout: 30000       # 连接允许在池中闲置的最长时间，默认600000（10分钟），单位ms
+          pool-name: UserHikariCP   # 连接池名称
+          max-lifetime: 1800000     # 此属性控制池中连接的最长生命周期，值0表示无限生命周期，默认1800000即30分钟，单位ms
+          connection-timeout: 30000 # 数据库连接超时时间,默认30秒，即30000，单位ms
+          connection-test-query: SELECT 1
+      shardingdb1:
+        type: com.zaxxer.hikari.HikariDataSource # 连接池配置
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        jdbc-url: jdbc:mysql://114.116.69.230:13036/sharding_db_2?useUnicode=true&characterEncoding=utf8&autoReconnect=true&useSSL=false&allowMultiQueries=true&useAffectedRows=true&serverTimezone=Asia/Shanghai
+        username: fyzq_scm_test
+        password: r7XNMpwfHffT44Lz
+        hikari:
+          minimum-idle: 5           # 最小连接数
+          maximum-pool-size: 15     # 最大连接数
+          auto-commit: true         # 此属性控制从池返回的连接的默认自动提交行为,默认值：true
+          idle-timeout: 30000       # 连接允许在池中闲置的最长时间，默认600000（10分钟），单位ms
+          pool-name: UserHikariCP   # 连接池名称
+          max-lifetime: 1800000     # 此属性控制池中连接的最长生命周期，值0表示无限生命周期，默认1800000即30分钟，单位ms
+          connection-timeout: 30000 # 数据库连接超时时间,默认30秒，即30000，单位ms
+          connection-test-query: SELECT 1
+      shardingdb2:
+        type: com.zaxxer.hikari.HikariDataSource # 连接池配置
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        jdbc-url: jdbc:mysql://114.116.69.230:13036/sharding_db_3?useUnicode=true&characterEncoding=utf8&autoReconnect=true&useSSL=false&allowMultiQueries=true&useAffectedRows=true&serverTimezone=Asia/Shanghai
+        username: fyzq_scm_test
+        password: r7XNMpwfHffT44Lz
+        hikari:
+          minimum-idle: 5           # 最小连接数
+          maximum-pool-size: 15     # 最大连接数
+          auto-commit: true         # 此属性控制从池返回的连接的默认自动提交行为,默认值：true
+          idle-timeout: 30000       # 连接允许在池中闲置的最长时间，默认600000（10分钟），单位ms
+          pool-name: UserHikariCP   # 连接池名称
+          max-lifetime: 1800000     # 此属性控制池中连接的最长生命周期，值0表示无限生命周期，默认1800000即30分钟，单位ms
+          connection-timeout: 30000 # 数据库连接超时时间,默认30秒，即30000，单位ms
+          connection-test-query: SELECT 1
+    props: #打印sql
+      sql:
+        show: true
+    # 分两个库，三个表 ds0.db0/ds0.db1/ds0.db2，ds1.db0/ds1.db1/ds1.db2
+    sharding:
+      default-database-strategy:  #分库策略 根据id取模确定数据进哪个数据库
+        inline:
+          algorithm-expression: shardingdb$->{age % 3} # 分片算法
+          sharding-column: age # 分片键
+      tables: # 具体分表策略
+        test:
+          actual-data-nodes: shardingdb$->{0..2}.test_$->{0..2} # 节点 ds0.db0/ds0.db1/ds0.db2，ds1.db0/ds1.db1/ds1.db2
+          table-strategy:
+            inline:
+              algorithm-expression: test_$->{id % 3} # 分表策略 根据id取模,确定数据最终落在那个表中
+              sharding-column: id # 分表字段id
+
