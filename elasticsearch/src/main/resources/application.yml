@@ -1,0 +1,18 @@
+spring:
+  data:
+    elasticsearch:
+      repositories:
+        enabled: true
+      client:
+        reactive:
+          use-ssl: false
+          endpoints: 127.0.0.1:9200
+#          connection-timeout: #链接到es的超时时间，毫秒为单位，默认10秒（10000毫秒）
+#          socket-timeout: #读取和写入的超时时间，单位为毫秒，默认5秒（5000毫秒）
+#  elasticsearch:
+#    rest:
+#      uris: 127.0.0.1:9200
+##     这两个属性在新版本的springboot中已经不建议使用，9300属于elasticsearch各节点之间的通讯接口。
+##     属于lowlevelclient。我们推荐使用9200的RestHighLevelClient去链接
+##     cluster-nodes: 127.0.0.1:9300
+##     cluster-name: helloElasticsearch

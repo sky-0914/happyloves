@@ -18,6 +18,7 @@
     </properties>
 
     <modules>
+        <module>elasticsearch</module>
         <module>example</module>
         <module>h2db</module>
         <module>mongodb</module>
