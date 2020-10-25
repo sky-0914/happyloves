@@ -8,4 +8,7 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
  * @date 2020/10/23 14:00
  */
 public interface StudentRepository extends ElasticsearchRepository<Student, Long> {
+
+    Iterable<Student> findAllByAge
+
 }
