@@ -9,6 +9,12 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
  */
 public interface StudentRepository extends ElasticsearchRepository<Student, Long> {
 
-    Iterable<Student> findAllByAge
+    /**
+     * 查询年龄大于
+     *
+     * @param age 年龄
+     * @return 返回值
+     */
+    Iterable<Student> findAllByAgeAfter(int age);
 
 }
