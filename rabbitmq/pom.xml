@@ -19,6 +19,7 @@
 
     <modules>
         <module>rabbitmq-consumers</module>
+        <module>rabbitmq-producers</module>
     </modules>
 
 </project>
