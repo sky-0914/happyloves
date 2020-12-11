@@ -1,7 +1,11 @@
 package cn.happyloves.example.lock;
 
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -27,7 +31,7 @@ public class DemoLock {
         lock.unlock();
     }
 
-    public static void main(String[] args) {
+    public static void main2(String[] args) {
         for (int j = 0; j < 10; j++) {
             new Thread(() -> {
                 try {
@@ -46,6 +50,4 @@ public class DemoLock {
 
         log.info("结束啦");
     }
-
-
 }

@@ -1,7 +1,8 @@
-# 应用名称
-spring.application.name=rabbitmq-producers
-
-# 应用服务 WEB 访问端口
-server.port=8080
-
-
+spring:
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    publisher-returns: true # 消息发送到交换机确认机制，是否返回回调
+    # springboot.rabbitmq.publisher-confirm 新版本已被弃用，现在使用 spring.rabbitmq.publisher-confirm-type = correlated 实现相同效果
