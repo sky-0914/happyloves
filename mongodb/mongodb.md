@@ -132,4 +132,21 @@ rs.addArb("${ip}:${port}") // 新增仲裁节点
 rs.remove("${ip}:${port}") // 删除一个节点
 rs.reconfig(cfg)           // 重写复制集配置
 ```
+**修改集群IP**
+```shell
+# 获取副本集配置
+replication:OTHER> cfg=rs.conf()
+replication:OTHER> printjson(cfg)
+# 查看配置节点
+replication:OTHER> printjson(cfg.members[0])
+# 修改节点端口
+replication:OTHER> cfg.members[0].host="192.168.249.181:27000"
+replication:OTHER> cfg.members[1].host="192.168.249.181:27001"
+replication:OTHER> cfg.members[2].host="192.168.249.181:27002"
+# 重新配置
+replication:OTHER> rs.reconfig(cfg)    # 可能会报错"errmsg" : "replSetReconfig should only be run on PRIMARY, but my state is REMOVED; use the \"force\" argument to override",
+# 报错的话，根据报错信息加强制指令执行
+replication:OTHER> rs.reconfig(cfg, {force : true})
+```
+
 

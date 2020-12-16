@@ -1,5 +1,7 @@
 package cn.happyloves.example.hash;
 
+import java.util.HashMap;
+
 /**
  * @author zc
  * @date 2020/12/10 21:19
@@ -59,5 +61,6 @@ public class TestHash {
         System.out.println(s1.hashCode());
         System.out.println(s1.hashCode());
         System.out.println(s1.equals(s2));
+
     }
 }

@@ -1,21 +1,52 @@
 package cn.happyloves.rabbitmq.producers;
 
-import org.springframework.amqp.core.Queue;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
  * @author zc
  * @date 2020/12/10 22:06
+ * 方式一：定义createRabbitTemplate
  */
 @Configuration
 public class Config {
 
-    @Bean
-    public Queue queue() {
-        // durable:是否持久化,默认是false,持久化队列：会被存储在磁盘上，当消息代理重启时仍然存在，暂存队列：当前连接有效
-        // exclusive:默认也是false，只能被当前创建的连接使用，而且当连接关闭后队列即被删除。此参考优先级高于durable
-        // autoDelete:是否自动删除，当没有生产者或者消费者使用此队列，该队列会自动删除
-        return new Queue(Constant.QUEUE);
-    }
+//    @Bean
+//    public RabbitTemplate createRabbitTemplate(ConnectionFactory connectionFactory) {
+//        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+//        // 此种方式在yml配置中定义spring.rabbit.template.mandatory=true 无效,必须在配置中rabbitTemplate.setMandatory(true);才生效
+//        rabbitTemplate.setMandatory(true);
+//        //correlationData：队列唯一标识, ack：消息投递状态, cause:异常信息。触发机制：当找不到交换机触发
+//        rabbitTemplate.setConfirmCallback((correlationData, ack, cause) -> {
+//            System.out.println("确认回调:");
+//            try {
+//                String messageStr = new ObjectMapper().writeValueAsString(correlationData);
+//                System.out.println(messageStr);
+//            } catch (JsonProcessingException e) {
+//                e.printStackTrace();
+//            }
+//            System.out.println(ack);
+//            System.out.println(cause);
+//        });
+//        rabbitTemplate.setRecoveryCallback((var1) -> {
+//            System.out.println("重试回调:");
+//            String messageStr = new ObjectMapper().writeValueAsString(var1);
+//            System.out.println(messageStr);
+//            return var1;
+//        });
+//        rabbitTemplate.setReturnCallback((Message message, int replyCode, String replyText, String exchange, String routingKey) -> {
+//            System.out.println("返回回调:");
+//            try {
+//                String messageStr = new ObjectMapper().writeValueAsString(message);
+//                System.out.println(messageStr);
+//            } catch (JsonProcessingException e) {
+//                e.printStackTrace();
+//            }
+//            System.out.println(message);
+//            System.out.println(replyCode);
+//            System.out.println(exchange);
+//            System.out.println(routingKey);
+//        });
+//        return rabbitTemplate;
+//    }
+
 }
