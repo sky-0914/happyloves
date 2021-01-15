@@ -8,7 +8,7 @@ package cn.happyloves.example.singleton;
  * 1、实现简单
  * 2、线程安全的
  * 缺点：
- *  * 1、没有懒加载，在不需要的此实例的时候就已经把实例创建出来了
+ * * 1、没有懒加载，在不需要的此实例的时候就已经把实例创建出来了
  *
  * @author zc
  * @date 2020/9/5 00:54
@@ -27,5 +27,18 @@ public class SingletonA {
         SingletonA instance1 = SingletonA.getInstance();
         SingletonA instance2 = SingletonA.getInstance();
         System.out.println(instance1 == instance2);
+
+        Thread t1 = new Thread(() -> {
+            SingletonA a = SingletonA.getInstance();
+            System.out.println(a);
+        });
+        Thread t2 = new Thread(() -> {
+            SingletonA a = SingletonA.getInstance();
+            System.out.println(a);
+        });
+
+        t1.start();
+        t2.start();
+
     }
 }

@@ -20,10 +20,11 @@ public class SingletonBSafe {
     private SingletonBSafe() {
     }
 
-    public static SingletonBSafe getInstance() {
+    public static SingletonBSafe getInstance() throws InterruptedException {
         if (null == INSTANCE) {
             synchronized (SingletonBSafe.class) {
                 if (null == INSTANCE) {
+                    Thread.sleep(500);
                     INSTANCE = new SingletonBSafe();
                 }
             }
@@ -32,8 +33,30 @@ public class SingletonBSafe {
     }
 
     public static void main(String[] args) {
-        SingletonBSafe instance1 = SingletonBSafe.getInstance();
-        SingletonBSafe instance2 = SingletonBSafe.getInstance();
-        System.out.println(instance1 == instance2);
+//        SingletonBSafe instance1 = SingletonBSafe.getInstance();
+//        SingletonBSafe instance2 = SingletonBSafe.getInstance();
+//        System.out.println(instance1 == instance2);
+
+        Thread t1 = new Thread(() -> {
+            SingletonBSafe b = null;
+            try {
+                b = SingletonBSafe.getInstance();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println(b);
+        });
+        Thread t2 = new Thread(() -> {
+            SingletonBSafe b = null;
+            try {
+                b = SingletonBSafe.getInstance();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println(b);
+        });
+
+        t1.start();
+        t2.start();
     }
 }

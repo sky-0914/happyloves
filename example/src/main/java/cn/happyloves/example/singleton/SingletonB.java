@@ -18,16 +18,39 @@ public class SingletonB {
     private SingletonB() {
     }
 
-    public static SingletonB getInstance() {
+    public static SingletonB getInstance() throws InterruptedException {
         if (null == INSTANCE) {
+            Thread.sleep(500);
             INSTANCE = new SingletonB();
         }
         return INSTANCE;
     }
 
     public static void main(String[] args) {
-        SingletonB instance1 = SingletonB.getInstance();
-        SingletonB instance2 = SingletonB.getInstance();
-        System.out.println(instance1 == instance2);
+//        SingletonB instance1 = SingletonB.getInstance();
+//        SingletonB instance2 = SingletonB.getInstance();
+//        System.out.println(instance1 == instance2);
+
+        Thread t1 = new Thread(() -> {
+            SingletonB b = null;
+            try {
+                b = SingletonB.getInstance();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println(b);
+        });
+        Thread t2 = new Thread(() -> {
+            SingletonB b = null;
+            try {
+                b = SingletonB.getInstance();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println(b);
+        });
+
+        t1.start();
+        t2.start();
     }
 }
