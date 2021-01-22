@@ -15,6 +15,11 @@ package cn.happyloves.example.singleton;
  */
 public class SingletonBSafe {
 
+    /**
+     * volatile
+     * 保证线程可见性
+     * 禁止指令重排序
+     */
     private static volatile SingletonBSafe INSTANCE = null;
 
     private SingletonBSafe() {
