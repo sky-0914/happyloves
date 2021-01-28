@@ -1,7 +1,7 @@
 package cn.happyloves.example.thread;
 
 /**
- * 锁状态
+ * 线程状态
  *
  * @author zc
  * @date 2021/1/15 22:59
@@ -23,26 +23,15 @@ public class DemoThread1 {
         System.out.println(t.getState());
         t.start();
         System.out.println(t.getState());
-        try {
-            t.wait();
-            System.out.println(t.getState());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-//        t.notify();
-//        System.out.println(t.getState());
-//        t.notifyAll();
-//        System.out.println(t.getState());
+
         for (int i = 0; i < 6; i++) {
             try {
-                Thread.sleep(1000);
-
+                Thread.sleep(2);
                 System.out.println(t.getState());
-
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            System.out.println(t.getState());
         }
     }
 }
