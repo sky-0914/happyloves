@@ -37,8 +37,9 @@ public class NIOServerTest {
                 System.out.println("服务等待1秒，无连接");
                 continue;
             }
+            // final Set<SelectionKey> keys = selector.keys(); 获取的是所有注册到selector 的SelectionKey集合
             //如果返回>0，则代表已经发生了监听的事件
-            //获取监听事件的集合 Set<SelectionKey> selectionKeys = selector.selectedKeys();
+            //获取监听事件的集合，获取已经发生事件的SelectionKey的集合 Set<SelectionKey> selectionKeys = selector.selectedKeys();
             //通过SelectionKey反向获取Channel
             //使用迭代器循环处理
             final Iterator<SelectionKey> iterator = selector.selectedKeys().iterator();
