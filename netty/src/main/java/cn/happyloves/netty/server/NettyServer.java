@@ -63,7 +63,7 @@ public class NettyServer {
             }
             //对关闭通道进行监听
             future.channel().closeFuture().syncUninterruptibly();
-        } catch (Exception e) {
+        } finally {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
         }

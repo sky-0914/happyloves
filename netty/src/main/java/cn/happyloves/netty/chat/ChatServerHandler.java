@@ -1,36 +1,40 @@
-package cn.happyloves.netty.server;
+package cn.happyloves.netty.chat;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import io.netty.channel.*;
-import io.netty.util.CharsetUtil;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.group.ChannelGroup;
+import io.netty.channel.group.DefaultChannelGroup;
+import io.netty.util.concurrent.GlobalEventExecutor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
- * @author zc
- * @date 2021/2/2 15:21
+ * @author ZC
+ * @date 2021/2/4 20:01
  */
 @Slf4j
-@ChannelHandler.Sharable //线程安全
-public class ServerChannelHandler extends SimpleChannelInboundHandler<Object> {
+public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
 
-    /**
-     * 读取客户端发送过来的消息
-     *
-     * @param channelHandlerContext 上下文对象，含有 管道pipeline，通道channel，地址等信息
-     * @param o                     就是客户端发送的数据，默认Object
-     */
+    //定义一个Channel组，管理所有的channel 全局ChannelGroup
+    //GlobalEventExecutor.INSTANCE 是全局事件执行器，是一个单例
+    private static ChannelGroup channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
     @Override
-    protected void channelRead0(ChannelHandlerContext channelHandlerContext, Object o) {
-        System.out.println("服务器读取线程：" + Thread.currentThread().getName());
-        System.out.println("server channelHandlerContext = " + channelHandlerContext);
-        final Channel channel = channelHandlerContext.channel();
-        final ChannelPipeline pipeline = channelHandlerContext.pipeline();
-
-        //将msg转成一个ByteBuf，比NIO的ByteBuffer性能更高
-        ByteBuf buf = (ByteBuf) o;
-        System.out.println("客户端发送的消息是：" + buf.toString(CharsetUtil.UTF_8));
-        System.out.println("客户端地址：" + channelHandlerContext.channel().remoteAddress());
+    protected void channelRead0(ChannelHandlerContext channelHandlerContext, String s) throws Exception {
+        log.info("读取数据 ===>>> 客户端[{}]发送消息：{}", channelHandlerContext.channel().remoteAddress(), s);
+        //这时，遍历channelGroup，根据不同的情况，回送不同的消息
+        channelGroup.forEach(channel -> {
+            if (channel != channelHandlerContext.channel()) {
+                channel.writeAndFlush("[客户]" + channel.remoteAddress() + "发送了消息：" + s + "\n");
+            } else {
+                //把自己发送的消息发送给自己
+                channel.writeAndFlush("[自己]发送了消息：" + s + "\n");
+            }
+        });
     }
 
     @Override
@@ -54,7 +58,7 @@ public class ServerChannelHandler extends SimpleChannelInboundHandler<Object> {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         log.info("channel活跃 ===>>> channelActive() -- 客户端准备就绪, ip=[{}]", ctx.channel().remoteAddress());
-        super.channelActive(ctx);
+        System.out.println(ctx.channel().remoteAddress() + " " + sdf.format(new Date()) + "上线了~");
     }
 
     /**
@@ -66,15 +70,13 @@ public class ServerChannelHandler extends SimpleChannelInboundHandler<Object> {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         log.info("channel不活跃，断开连接 ===>>> channelInactive() -- 客户端被关闭, ip=[{}]", ctx.channel().remoteAddress());
-        super.channelInactive(ctx);
+        System.out.println(ctx.channel().remoteAddress() + " " + sdf.format(new Date()) + "离线了~");
     }
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
         log.info("channel读完数据，读取完毕 ===>>> channelReadComplete() -- 本次读取客户端数据完毕: ip=[{}]", ctx.channel().remoteAddress());
-        //它是 write + flush，将数据写入到缓存buffer，并将buffer中的数据flush进通道
-        //一般讲，我们对这个发送的数据进行编码
-        ctx.writeAndFlush(Unpooled.copiedBuffer("hello, 客户端~", CharsetUtil.UTF_8)).syncUninterruptibly();
+        super.channelReadComplete(ctx);
     }
 
     @Override
@@ -89,19 +91,10 @@ public class ServerChannelHandler extends SimpleChannelInboundHandler<Object> {
         super.channelWritabilityChanged(ctx);
     }
 
-    /**
-     * 处理异常，一般是关闭通道
-     *
-     * @param ctx   上下文对象
-     * @param cause 异常
-     * @throws Exception 异常信息
-     */
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         log.error("channel异常捕获，关闭了 ===>>> exceptionCaught() -- 异常处理", cause);
-        //异常信息
-        cause.printStackTrace();
-        ctx.close();
+        ctx.channel().close();
     }
 
     /**
@@ -113,7 +106,11 @@ public class ServerChannelHandler extends SimpleChannelInboundHandler<Object> {
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
         log.info("channel添加handler ===>>> handlerAdded() -- 增加逻辑处理器");
-        super.handlerAdded(ctx);
+        Channel channel = ctx.channel();
+        //该方法会将 channelGroup 中所有 channel 遍历，并发送消息，而不需要我们自己去遍历
+        channelGroup.writeAndFlush("[客户端]" + channel.remoteAddress() + sdf.format(new Date()) + "加入聊天\n");
+        //将当前的Channel加入到 ChannelGroup
+        channelGroup.add(channel);
     }
 
     /**
@@ -125,6 +122,9 @@ public class ServerChannelHandler extends SimpleChannelInboundHandler<Object> {
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
         log.info("channel删除handler ===>>> handlerRemoved() -- 逻辑处理器被移除");
-        super.handlerRemoved(ctx);
+        Channel channel = ctx.channel();
+        channelGroup.writeAndFlush("[客户端]" + channel.remoteAddress() + " " + sdf.format(new Date()) + "离开了\n");
+        System.out.println("当前channelGroup大小 ：" + channelGroup.size());
     }
+
 }
