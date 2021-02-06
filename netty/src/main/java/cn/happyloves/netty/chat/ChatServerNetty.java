@@ -7,6 +7,9 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
+import io.netty.handler.timeout.IdleStateHandler;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author ZC
@@ -36,6 +39,14 @@ public class ChatServerNetty {
                             ChannelPipeline pipeline = socketChannel.pipeline();
                             pipeline.addLast("decoder", new StringDecoder()); //向pipeline加入解码器
                             pipeline.addLast("encoder", new StringEncoder()); //加入编码器
+                            /**
+                             * 心跳机制
+                             * long readerIdleTime, 多长时间没有读、发送一个心跳检测包，检测是否在线
+                             * long writerIdleTime, 多长时间没有读、发送一个心跳检测包，检测是否在线
+                             * long allIdleTime, 多长时间没有读写、发送一个心跳检测包，检测是否在线
+                             * TimeUnit unit 时间单位
+                             */
+                            pipeline.addLast(new IdleStateHandler(5, 5, 10, TimeUnit.SECONDS));
                             pipeline.addLast(new ChatServerHandler());
                         }
                     });

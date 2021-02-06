@@ -5,6 +5,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
+import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -79,10 +80,31 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
         super.channelReadComplete(ctx);
     }
 
+    /**
+     * 触发事件
+     *
+     * @param ctx 上下文对象
+     * @param evt 事件
+     * @throws Exception 异常
+     */
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         log.info("channel用户事件触发 ===>>> userEventTriggered() -- 在规定时间内未进行读/写，链接断开");
-        super.channelWritabilityChanged(ctx);
+        final Channel channel = ctx.channel();
+        IdleStateEvent event = (IdleStateEvent) evt;
+        switch (event.state()) {
+            case READER_IDLE:
+                log.warn("客户端[{}],没有读", channel.remoteAddress());
+                break;
+            case WRITER_IDLE:
+                log.warn("客户端[{}],没有写", channel.remoteAddress());
+                break;
+            case ALL_IDLE:
+                log.warn("客户端[{}],没有读写", channel.remoteAddress());
+                break;
+        }
+
+
     }
 
     @Override
