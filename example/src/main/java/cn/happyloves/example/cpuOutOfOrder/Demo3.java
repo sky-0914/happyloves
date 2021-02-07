@@ -23,7 +23,7 @@ public class Demo3 {
                 @Override
                 public void run() {
                     //线程1会比线程2先执行，因此用nanoTime让线程1等待线程2 0.01毫秒
-                    shortWait(10000);
+//                    shortWait(10000);
                     a = 1;
                     x = b;
                 }
@@ -37,8 +37,10 @@ public class Demo3 {
             });
             thread1.start();
             thread2.start();
-            thread1.join();
+
             thread2.join();
+            thread1.join();
+
             //等两个线程都执行完毕后拼接结果
             String result = "第" + i + "次执行x=" + x + "y=" + y;
             //如果x=0且y=0，则跳出循环

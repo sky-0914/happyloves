@@ -50,6 +50,12 @@
             <artifactId>guava</artifactId>
             <version>29.0-jre</version>
         </dependency>
+        <!-- 工具：JOL=JAVA Object Layout -->
+        <dependency>
+            <groupId>org.openjdk.jol</groupId>
+            <artifactId>jol-core</artifactId>
+            <version>0.14</version>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
