@@ -1,4 +1,4 @@
-package cn.happyloves.example.proxy;
+package cn.happyloves.example.proxy.dynamic;
 
 /**
  * @author zc
