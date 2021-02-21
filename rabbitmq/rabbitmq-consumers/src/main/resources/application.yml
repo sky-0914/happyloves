@@ -1,18 +1,17 @@
 spring:
   rabbitmq:
-    host: localhost
+    host: 192.168.1.32
     port: 5672
     username: guest
     password: guest
-    publisher-returns: true # 消息发送到交换机确认机制，是否返回回调
-    # springboot.rabbitmq.publisher-confirm 新版本已被弃用，现在使用 spring.rabbitmq.publisher-confirm-type = correlated 实现相同效果
-    #NONE值是禁用发布确认模式，是默认值
-    #CORRELATED值是发布消息成功到交换器后会触发回调方法，publisher-confirms: true 替换为  publisher-confirm-type: correlated
-    #SIMPLE值经测试有两种效果，其一效果和CORRELATED值一样会触发回调方法，其二在发布消息成功后使用rabbitTemplate调用waitForConfirms或waitForConfirmsOrDie方法等待broker节点返回发送结果，根据返回结果来判定下一步的逻辑，要注意的点是waitForConfirmsOrDie方法如果返回false则会关闭channel，则接下来无法发送消息到broker;
-    publisher-confirm-type: correlated
-    template:
-      mandatory: true # 开启mandatory模式（开启失败回调）添加失败回调方法 rabbitTemplate.setReturnCallback();
-#    listener:
-#      direct:
-#        acknowledge-mode:
-#      simple:
+    listener:
+      # 直连队列
+      simple:
+        acknowledge-mode: manual # 设置消费端手动 ack,默认是auto
+        retry:
+          enabled: true # 是否支持重试
+      # 交换机
+      direct:
+        acknowledge-mode: manual # 设置消费端手动 ack,默认是auto
+        retry:
+          enabled: true # 是否支持重试

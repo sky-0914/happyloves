@@ -31,45 +31,6 @@ public class DirecProducers {
         map.put("messageData", messageData);
         map.put("createTime", createTime);
         map.put("i", i);
-
-        //correlationData：队列唯一标识, ack：消息投递状态, cause:异常信息。
-        // 触发机制：
-        // 1.当找不到交换机
-        // 2.交换机和队列啥都没找到触发
-        // 3.找到交换机了，但是没找到队列
-        rabbitTemplate.setConfirmCallback((correlationData, ack, cause) -> {
-            System.out.println("确认回调:");
-            try {
-                String messageStr = new ObjectMapper().writeValueAsString(correlationData);
-                System.out.println(messageStr);
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
-            System.out.println(ack);
-            System.out.println(cause);
-        });
-        //触发机制：找到交换机了，但是没找到队列
-        rabbitTemplate.setReturnCallback((Message message, int replyCode, String replyText, String exchange, String routingKey) -> {
-            System.out.println("返回回调:");
-            try {
-                String messageStr = new ObjectMapper().writeValueAsString(message);
-                System.out.println(messageStr);
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
-            System.out.println(message);
-            System.out.println(replyCode);
-            System.out.println(exchange);
-            System.out.println(routingKey);
-        });
-        rabbitTemplate.setRecoveryCallback((var1) -> {
-            System.out.println("重试回调:");
-            String messageStr = new ObjectMapper().writeValueAsString(var1);
-            System.out.println(messageStr);
-            return var1;
-        });
-
-
         //将消息携带绑定键值：TestDirectRouting 发送到交换机TestDirectExchange
         rabbitTemplate.convertAndSend(exchangeStr, routingKeyStr, map);
     }

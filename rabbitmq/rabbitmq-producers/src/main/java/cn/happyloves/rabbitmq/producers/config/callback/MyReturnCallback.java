@@ -1,4 +1,4 @@
-package cn.happyloves.rabbitmq.consumers.callback;
+package cn.happyloves.rabbitmq.producers.config.callback;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,21 +9,17 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 /**
  * @author zc
  * @date 2020/12/15 19:08
+ * 失败回调方法-触发机制：找到交换机了，但是没找到队列
  */
 @Slf4j
 public class MyReturnCallback implements RabbitTemplate.ReturnCallback {
     @Override
-    public void returnedMessage(Message message, int i, String s, String s1, String s2) {
-        log.debug("返回回调:");
+    public void returnedMessage(Message message, int replyCode, String replyText, String exchange, String routingKey) {
         try {
             String messageStr = new ObjectMapper().writeValueAsString(message);
-            System.out.println(messageStr);
+            log.error("返回回调 - message: {},replyCode: {},replyText: {},exchange: {},routingKey: {}", messageStr, replyCode, replyText, exchange, routingKey);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        System.out.println(message);
-//        System.out.println(replyCode);
-//        System.out.println(exchange);
-//        System.out.println(routingKey);
     }
 }

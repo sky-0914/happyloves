@@ -18,10 +18,8 @@ public class SendController {
     private SimpleProducers simpleProducers;
 
     @GetMapping("/simple")
-    public String direc(String queueName) {
-        for (int i = 0; i < 10; i++) {
-            simpleProducers.sendSimple(queueName, i);
-        }
+    public String direc(String queueName, int i) {
+        simpleProducers.sendSimple(queueName, i);
         return "ok";
     }
 

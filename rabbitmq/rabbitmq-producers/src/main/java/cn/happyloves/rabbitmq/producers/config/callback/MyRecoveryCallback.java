@@ -1,4 +1,4 @@
-package cn.happyloves.rabbitmq.consumers.callback;
+package cn.happyloves.rabbitmq.producers.config.callback;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +14,7 @@ public class MyRecoveryCallback implements RecoveryCallback {
     @Override
     public Object recover(RetryContext retryContext) throws Exception {
         String messageStr = new ObjectMapper().writeValueAsString(retryContext);
-        System.out.println(messageStr);
+        log.info("重试回调 - message: {}", messageStr);
         return retryContext;
     }
 }
