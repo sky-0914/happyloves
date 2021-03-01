@@ -23,6 +23,7 @@
         <module>h2db</module>
         <module>mongodb</module>
         <module>netty</module>
+        <module>netty-rpc</module>
         <module>rabbitmq</module>
         <module>redis</module>
         <module>shardingsphere</module>
