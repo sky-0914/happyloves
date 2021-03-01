@@ -13,6 +13,7 @@ public class RpcMessage implements Serializable {
     private static final long serialVersionUID = 430507739718447406L;
     private String name;
     private String methodName;
+    private Class<?>[] parTypes;
     private Object[] pars;
     private Object result;
 }
