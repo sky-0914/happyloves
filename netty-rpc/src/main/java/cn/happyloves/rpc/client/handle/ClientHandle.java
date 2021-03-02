@@ -9,12 +9,21 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 
 /**
  * @author zc
  * @date 2021/3/2 15:19
  */
 public class ClientHandle extends SimpleChannelInboundHandler<RpcMessage> implements ApplicationContextAware {
+
+    private <T> T getBean(Class<T> clazz) {
+        return Proxy.newProxyInstance(clazz.getClassLoader(), new Class[]{clazz}, (proxy, method, args) -> {
+
+        });
+    }
 
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         final String[] beanDefinitionNames = applicationContext.getBeanDefinitionNames();
@@ -48,5 +57,13 @@ public class ClientHandle extends SimpleChannelInboundHandler<RpcMessage> implem
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, RpcMessage rpcMessage) throws Exception {
 
+    }
+
+    static class ClientInvocationHandle implements InvocationHandler {
+
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+
+            return null;
+        }
     }
 }
