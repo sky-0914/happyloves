@@ -1,21 +1,16 @@
-package cn.happyloves.h2db.service;
+package cn.happyloves.netty.rpc.examplex.server.service;
 
-import cn.happyloves.h2db.entity.Account;
 import cn.happyloves.rpc.api.Test1Api;
 import cn.happyloves.rpc.client.RpcServer;
 import org.springframework.stereotype.Service;
 
 /**
  * @author ZC
- * @date 2021/3/1 21:14
+ * @date 2021/3/2 23:59
  */
 @Service
 @RpcServer
-public class TestService implements Test1Api {
-    public void test11() {
-        System.out.println("TEST");
-    }
-
+public class TestServiceImpl implements Test1Api {
     @Override
     public void test() {
         System.out.println("111111111");
@@ -39,5 +34,4 @@ public class TestService implements Test1Api {
         account.setName("张三");
         return account;
     }
-
 }

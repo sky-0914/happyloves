@@ -1,5 +1,6 @@
 package cn.happyloves.rpc.server.handle;
 
+import cn.happyloves.rpc.client.RpcServer;
 import cn.happyloves.rpc.message.RpcMessage;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -8,10 +9,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author ZC
@@ -23,8 +24,16 @@ public class ServerHandle extends SimpleChannelInboundHandler<RpcMessage> implem
     private Map<String, Object> serviceMap;
 
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        serviceMap = applicationContext.getBeansWithAnnotation(Service.class);
-        log.info("被@Service注解加载的Bean: {}", serviceMap);
+        Map<String, Object> beansWithAnnotation = applicationContext.getBeansWithAnnotation(RpcServer.class);
+        log.info("被@Service注解加载的Bean: {}", beansWithAnnotation);
+        if (beansWithAnnotation.size() > 0) {
+            Map<String, Object> map = new ConcurrentHashMap<String, Object>();
+            for (Object o : beansWithAnnotation.values()) {
+                Class<?> anInterface = o.getClass().getInterfaces()[0];
+                map.put(anInterface.getName(), o);
+            }
+            serviceMap = map;
+        }
     }
 
     @Override
@@ -47,6 +56,7 @@ public class ServerHandle extends SimpleChannelInboundHandler<RpcMessage> implem
         method.setAccessible(true);
         Object result = method.invoke(service, rpcMessage.getPars());
         rpcMessage.setResult(result);
+        log.info("回给客户端的消息：{}", rpcMessage);
         channelHandlerContext.channel().writeAndFlush(rpcMessage);
     }
 }

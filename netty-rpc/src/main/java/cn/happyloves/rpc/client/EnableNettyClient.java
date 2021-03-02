@@ -1,6 +1,6 @@
-package cn.happyloves.rpc.server;
+package cn.happyloves.rpc.client;
 
-import cn.happyloves.rpc.config.ServerBeanConfig;
+import cn.happyloves.rpc.config.ClientBeanConfig;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 
 import java.lang.annotation.*;
@@ -13,6 +13,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@ImportAutoConfiguration({ServerBeanConfig.class})
-public @interface EnableNettyServer {
+@ImportAutoConfiguration({ClientBeanConfig.class})
+public @interface EnableNettyClient {
 }

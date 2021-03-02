@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
  * @date 2021/3/1 18:24
  */
 @Configuration
-public class BeanConfig {
+public class ServerBeanConfig {
 
     @Bean
     public ServerHandle serverHandle() {

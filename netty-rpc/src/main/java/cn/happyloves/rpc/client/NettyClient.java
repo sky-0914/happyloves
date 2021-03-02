@@ -1,7 +1,7 @@
 package cn.happyloves.rpc.client;
 
+import cn.happyloves.rpc.client.handle.ClientHandle;
 import cn.happyloves.rpc.message.RpcMessage;
-import cn.happyloves.rpc.server.handle.ServerHandle;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -12,6 +12,9 @@ import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
 /**
  * @author ZC
  * @date 2021/3/1 23:30
@@ -20,61 +23,56 @@ import lombok.extern.slf4j.Slf4j;
 public class NettyClient {
 
     private int port;
-    private ServerHandle serverHandle;
     private Channel channel;
+    /**
+     * 存放请求编号与响应对象的映射关系
+     */
+    private ConcurrentMap<Channel, RpcMessage> rpcMessageConcurrentMap = new ConcurrentHashMap<Channel, RpcMessage>();
 
-    public NettyClient(int port, ServerHandle serverHandle) {
-        this.port = port;
-        this.serverHandle = serverHandle;
-    }
-
-    public void start(int port) {
+    public RpcMessage send(int port, RpcMessage rpcMessage, final ClientHandle clientHandle) {
         //客户端需要一个事件循环组
         EventLoopGroup group = new NioEventLoopGroup();
-        Bootstrap bootstrap = new Bootstrap();
-        bootstrap.group(group)
-                .channel(NioSocketChannel.class)
-                .handler(new ChannelInitializer<SocketChannel>() {
-                    @Override
-                    protected void initChannel(SocketChannel socketChannel) throws Exception {
-                        socketChannel.pipeline()
+        try {
+            Bootstrap bootstrap = new Bootstrap();
+            bootstrap.group(group)
+                    .channel(NioSocketChannel.class)
+                    .handler(new ChannelInitializer<SocketChannel>() {
+                        @Override
+                        protected void initChannel(SocketChannel socketChannel) throws Exception {
+                            socketChannel.pipeline()
 //                                .addLast(new StringDecoder())
 //                                .addLast(new StringEncoder())
-                                .addLast(new ObjectDecoder(ClassResolvers.weakCachingConcurrentResolver(this.getClass().getClassLoader())))
-                                .addLast(new ObjectEncoder())
-                                .addLast(new SimpleChannelInboundHandler<RpcMessage>() {
-                                    @Override
-                                    public void channelActive(ChannelHandlerContext ctx) throws Exception {
-                                        for (int i = 0; i < 10; i++) {
-                                            RpcMessage rpcMessage = new RpcMessage();
-                                            rpcMessage.setName("testService");
-                                            rpcMessage.setMethodName("testStr");
-                                            rpcMessage.setParTypes(new Class[]{int.class});
-                                            rpcMessage.setPars(new Object[]{1});
-                                            System.out.println(rpcMessage);
-                                            ctx.channel().writeAndFlush(rpcMessage);
-                                            System.out.println("================");
-                                        }
-                                    }
+                                    .addLast(new ObjectDecoder(ClassResolvers.weakCachingConcurrentResolver(this.getClass().getClassLoader())))
+                                    .addLast(new ObjectEncoder())
+                                    .addLast(clientHandle);
+                        }
+                    });
+            final ChannelFuture channelFuture = bootstrap.connect("127.0.0.1", port).syncUninterruptibly();
+            log.info("连接服务端成功: " + channelFuture.channel().remoteAddress());
+            channel = channelFuture.channel();
+            channel.writeAndFlush(rpcMessage);
 
-                                    @Override
-                                    protected void channelRead0(ChannelHandlerContext channelHandlerContext, RpcMessage rpcMessage) throws Exception {
-                                        System.out.println(rpcMessage);
-                                    }
-                                });
-                    }
-                });
-        final ChannelFuture channelFuture = bootstrap.connect("127.0.0.1", port).syncUninterruptibly();
-        channel = channelFuture.channel();
-        channelFuture.channel().closeFuture().syncUninterruptibly();
+            rpcMessage.setName("cn.happyloves.rpc.api.Test1Api");
+            rpcMessage.setMethodName("testStr");
+            rpcMessage.setParTypes(new Class[]{int.class});
+            rpcMessage.setPars(new Object[]{1});
+            System.out.println(rpcMessage);
+            channel.writeAndFlush(rpcMessage);
+
+            log.info("发送数据成功：{}", rpcMessage);
+            channelFuture.channel().closeFuture().syncUninterruptibly();
+            return rpcMessageConcurrentMap.get(channel.remoteAddress());
+        } catch (Exception e) {
+            log.error("client exception", e);
+            return null;
+        } finally {
+            group.shutdownGracefully();
+            //移除请求编号和响应对象直接的映射关系
+            rpcMessageConcurrentMap.remove(channel.remoteAddress());
+        }
     }
 
     public void stop() {
         channel.close();
-    }
-
-    public static void main(String[] args) {
-        NettyClient nettyClient = new NettyClient();
-        nettyClient.start(1111);
     }
 }

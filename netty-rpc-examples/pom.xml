@@ -3,13 +3,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>cn.happyloves</groupId>
-    <artifactId>happyloves</artifactId>
+    <groupId>cn.happyloves.netty.rpc.examples</groupId>
+    <artifactId>netty-rpc-examples</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>happyloves</name>
-    <description>happyloves</description>
+    <name>netty-rpc-examples</name>
+    <description>netty-rpc-examples</description>
 
     <properties>
         <java.version>1.8</java.version>
@@ -18,16 +18,8 @@
     </properties>
 
     <modules>
-        <module>elasticsearch</module>
-        <module>example</module>
-        <module>h2db</module>
-        <module>mongodb</module>
-        <module>netty</module>
-        <module>netty-rpc</module>
-        <module>netty-rpc-examples</module>
-        <module>rabbitmq</module>
-        <module>redis</module>
-        <module>shardingsphere</module>
+        <module>rpc-server</module>
+        <module>rpc-client</module>
     </modules>
 
 </project>
