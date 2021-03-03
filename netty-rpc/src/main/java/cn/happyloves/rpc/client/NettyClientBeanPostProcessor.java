@@ -1,6 +1,5 @@
 package cn.happyloves.rpc.client;
 
-import cn.happyloves.rpc.client.handle.ClientHandle;
 import cn.happyloves.rpc.message.RpcMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -21,11 +20,9 @@ import java.lang.reflect.Proxy;
 public class NettyClientBeanPostProcessor implements BeanPostProcessor {
 
     private NettyClient nettyClient;
-    private ClientHandle clientHandle;
 
-    public NettyClientBeanPostProcessor(NettyClient nettyClient,ClientHandle clientHandle) {
+    public NettyClientBeanPostProcessor(NettyClient nettyClient) {
         this.nettyClient = nettyClient;
-        this.clientHandle = clientHandle;
     }
 
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
@@ -37,7 +34,7 @@ public class NettyClientBeanPostProcessor implements BeanPostProcessor {
                 if (field.getAnnotation(RpcServer.class) != null) {
                     field.setAccessible(true);
                     try {
-                        Object o = Proxy.newProxyInstance(field.getType().getClassLoader(), new Class[]{field.getType()}, new ClientInvocationHandle(nettyClient,clientHandle));
+                        Object o = Proxy.newProxyInstance(field.getType().getClassLoader(), new Class[]{field.getType()}, new ClientInvocationHandle(nettyClient));
                         field.set(bean, o);
                         log.info("创建代理类 ===>>> {}", beanName);
                     } catch (IllegalAccessException e) {
@@ -57,11 +54,9 @@ public class NettyClientBeanPostProcessor implements BeanPostProcessor {
 
     static class ClientInvocationHandle implements InvocationHandler {
         private NettyClient nettyClient;
-        private ClientHandle clientHandle;
 
-        public ClientInvocationHandle(NettyClient nettyClient,ClientHandle clientHandle) {
+        public ClientInvocationHandle(NettyClient nettyClient) {
             this.nettyClient = nettyClient;
-            this.clientHandle = clientHandle;
         }
 
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
@@ -71,7 +66,7 @@ public class NettyClientBeanPostProcessor implements BeanPostProcessor {
                     .parTypes(method.getParameterTypes())
                     .pars(args)
                     .build();
-            RpcMessage send = nettyClient.send(1111, rpcMessage,clientHandle);
+            RpcMessage send = nettyClient.send(1111, rpcMessage);
             log.info("接收到服务端数据：{}", send);
             return send.getResult();
         }

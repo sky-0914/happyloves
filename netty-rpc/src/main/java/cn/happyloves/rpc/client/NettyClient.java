@@ -3,7 +3,10 @@ package cn.happyloves.rpc.client;
 import cn.happyloves.rpc.client.handle.ClientHandle;
 import cn.happyloves.rpc.message.RpcMessage;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.*;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -29,7 +32,7 @@ public class NettyClient {
      */
     private ConcurrentMap<Channel, RpcMessage> rpcMessageConcurrentMap = new ConcurrentHashMap<Channel, RpcMessage>();
 
-    public RpcMessage send(int port, RpcMessage rpcMessage, final ClientHandle clientHandle) {
+    public RpcMessage send(int port, final RpcMessage rpcMessage) {
         //客户端需要一个事件循环组
         EventLoopGroup group = new NioEventLoopGroup();
         try {
@@ -44,7 +47,7 @@ public class NettyClient {
 //                                .addLast(new StringEncoder())
                                     .addLast(new ObjectDecoder(ClassResolvers.weakCachingConcurrentResolver(this.getClass().getClassLoader())))
                                     .addLast(new ObjectEncoder())
-                                    .addLast(clientHandle);
+                                    .addLast(new ClientHandle(rpcMessageConcurrentMap));
                         }
                     });
             final ChannelFuture channelFuture = bootstrap.connect("127.0.0.1", port).syncUninterruptibly();
@@ -52,23 +55,25 @@ public class NettyClient {
             channel = channelFuture.channel();
             channel.writeAndFlush(rpcMessage);
 
-            rpcMessage.setName("cn.happyloves.rpc.api.Test1Api");
-            rpcMessage.setMethodName("testStr");
-            rpcMessage.setParTypes(new Class[]{int.class});
-            rpcMessage.setPars(new Object[]{1});
-            System.out.println(rpcMessage);
-            channel.writeAndFlush(rpcMessage);
+//            rpcMessage.setName("cn.happyloves.rpc.api.Test1Api");
+//            rpcMessage.setMethodName("testStr");
+//            rpcMessage.setParTypes(new Class[]{int.class});
+//            rpcMessage.setPars(new Object[]{1});
+//            System.out.println(rpcMessage);
+//            channel.writeAndFlush(rpcMessage);
 
             log.info("发送数据成功：{}", rpcMessage);
-            channelFuture.channel().closeFuture().syncUninterruptibly();
-            return rpcMessageConcurrentMap.get(channel.remoteAddress());
+            channel.closeFuture().syncUninterruptibly();
+            System.out.println("====================");
+            return rpcMessageConcurrentMap.get(channel);
+
         } catch (Exception e) {
             log.error("client exception", e);
             return null;
         } finally {
             group.shutdownGracefully();
             //移除请求编号和响应对象直接的映射关系
-            rpcMessageConcurrentMap.remove(channel.remoteAddress());
+            rpcMessageConcurrentMap.remove(channel);
         }
     }
 

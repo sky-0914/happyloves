@@ -2,7 +2,6 @@ package cn.happyloves.rpc.config;
 
 import cn.happyloves.rpc.client.NettyClient;
 import cn.happyloves.rpc.client.NettyClientBeanPostProcessor;
-import cn.happyloves.rpc.client.handle.ClientHandle;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -19,12 +18,7 @@ public class ClientBeanConfig {
     }
 
     @Bean
-    public ClientHandle clientHandle() {
-        return new ClientHandle();
-    }
-
-    @Bean
-    public NettyClientBeanPostProcessor nettyClientBeanPostProcessor(NettyClient nettyClient, ClientHandle clientHandle) {
-        return new NettyClientBeanPostProcessor(nettyClient, clientHandle);
+    public NettyClientBeanPostProcessor nettyClientBeanPostProcessor(NettyClient nettyClient) {
+        return new NettyClientBeanPostProcessor(nettyClient);
     }
 }

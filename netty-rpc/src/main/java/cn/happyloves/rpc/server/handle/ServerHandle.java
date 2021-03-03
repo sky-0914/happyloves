@@ -2,6 +2,7 @@ package cn.happyloves.rpc.server.handle;
 
 import cn.happyloves.rpc.client.RpcServer;
 import cn.happyloves.rpc.message.RpcMessage;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -57,6 +58,6 @@ public class ServerHandle extends SimpleChannelInboundHandler<RpcMessage> implem
         Object result = method.invoke(service, rpcMessage.getPars());
         rpcMessage.setResult(result);
         log.info("回给客户端的消息：{}", rpcMessage);
-        channelHandlerContext.channel().writeAndFlush(rpcMessage);
+        channelHandlerContext.writeAndFlush(rpcMessage).addListener(ChannelFutureListener.CLOSE);
     }
 }
