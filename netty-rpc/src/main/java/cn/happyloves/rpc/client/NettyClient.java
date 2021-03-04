@@ -30,7 +30,7 @@ public class NettyClient {
     /**
      * 存放请求编号与响应对象的映射关系
      */
-    private ConcurrentMap<Channel, RpcMessage> rpcMessageConcurrentMap = new ConcurrentHashMap<Channel, RpcMessage>();
+    private final ConcurrentMap<Channel, RpcMessage> rpcMessageConcurrentMap = new ConcurrentHashMap<Channel, RpcMessage>();
 
     public RpcMessage send(int port, final RpcMessage rpcMessage) {
         //客户端需要一个事件循环组
@@ -54,17 +54,8 @@ public class NettyClient {
             log.info("连接服务端成功: " + channelFuture.channel().remoteAddress());
             channel = channelFuture.channel();
             channel.writeAndFlush(rpcMessage);
-
-//            rpcMessage.setName("cn.happyloves.rpc.api.Test1Api");
-//            rpcMessage.setMethodName("testStr");
-//            rpcMessage.setParTypes(new Class[]{int.class});
-//            rpcMessage.setPars(new Object[]{1});
-//            System.out.println(rpcMessage);
-//            channel.writeAndFlush(rpcMessage);
-
             log.info("发送数据成功：{}", rpcMessage);
             channel.closeFuture().syncUninterruptibly();
-            System.out.println("====================");
             return rpcMessageConcurrentMap.get(channel);
 
         } catch (Exception e) {
