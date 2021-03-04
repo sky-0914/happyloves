@@ -2,6 +2,7 @@ package cn.happyloves.rpc.server.handle;
 
 import cn.happyloves.rpc.client.RpcServer;
 import cn.happyloves.rpc.message.RpcMessage;
+import cn.hutool.json.JSONUtil;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -74,7 +75,7 @@ public class ServerHandle extends SimpleChannelInboundHandler<RpcMessage> implem
         method.setAccessible(true);
         //反射调用实例对象方法，获取返回值
         Object result = method.invoke(service, rpcMessage.getPars());
-        rpcMessage.setResult(result);
+        rpcMessage.setResult(JSONUtil.toJsonStr(result));
         log.info("回给客户端的消息：{}", rpcMessage);
         //Netty服务端将数据写会Channel并发送给客户端，同时添加一个监听器，当所有数据包发送完成后，关闭通道
         channelHandlerContext.writeAndFlush(rpcMessage).addListener(ChannelFutureListener.CLOSE);

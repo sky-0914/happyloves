@@ -23,12 +23,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class NettyServer {
 
-    private int port;
     private ServerHandle serverHandle;
     private Channel channel;
 
-    public NettyServer(int port, ServerHandle serverHandle) {
-        this.port = port;
+    public NettyServer(ServerHandle serverHandle) {
         this.serverHandle = serverHandle;
     }
 
