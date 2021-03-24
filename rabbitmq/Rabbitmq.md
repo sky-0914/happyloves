@@ -33,5 +33,4 @@
 [RabbitMQ Spring-Boot 整合 使用教程 可靠性投递 顺序消费 高可用方案 事务消息 幂等性 SET化架构 等等](https://www.pianshen.com/article/2401259016/)
 
 ## Rabbit ACK 机制流程图
-
-![img.png](img.png)
+![](https://i.loli.net/2021/03/25/sWUKYV3pu7FxZAa.png)
