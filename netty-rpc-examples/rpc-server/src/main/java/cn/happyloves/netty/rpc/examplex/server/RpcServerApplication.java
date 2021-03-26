@@ -1,10 +1,10 @@
 package cn.happyloves.netty.rpc.examplex.server;
 
-import cn.happyloves.rpc.server.EnableNettyServer;
+import cn.happyloves.rpc.config.EnableNetty;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@EnableNettyServer
+@EnableNetty
 @SpringBootApplication
 public class RpcServerApplication {
 

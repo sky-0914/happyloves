@@ -1,6 +1,6 @@
 package cn.happyloves.netty.rpc.examples.client.controller;
 
-import cn.happyloves.rpc.api.Test1Api;
+import cn.happyloves.netty.rpc.examples.api.Test1Api;
 import cn.happyloves.rpc.client.RpcServer;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;

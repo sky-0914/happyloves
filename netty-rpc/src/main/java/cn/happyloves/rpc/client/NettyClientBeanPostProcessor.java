@@ -1,7 +1,6 @@
 package cn.happyloves.rpc.client;
 
 import cn.happyloves.rpc.message.RpcMessage;
-import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -113,7 +112,8 @@ public class NettyClientBeanPostProcessor implements BeanPostProcessor {
             //调用Netty，发送数据
             RpcMessage send = nettyClient.send(1111, rpcMessage);
             log.info("接收到服务端数据：{}", send);
-            log.info("====》》》》{}", JSONUtil.toBean(JSONUtil.parseObj(send.getResult()), method.getReturnType()));
+//            log.info("====》》》》{}", JSONUtil.toBean(JSONUtil.parseObj(send.getResult()), method.getReturnType()));
+            log.info("====》》》》{}", send.getResult());
             return send.getResult();
         }
     }

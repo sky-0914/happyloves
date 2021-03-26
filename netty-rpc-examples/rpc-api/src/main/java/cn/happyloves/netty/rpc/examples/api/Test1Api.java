@@ -1,4 +1,4 @@
-package cn.happyloves.rpc.api;
+package cn.happyloves.netty.rpc.examples.api;
 
 /**
  * @author zc
@@ -14,3 +14,4 @@ public interface Test1Api {
 
     Object testObj();
 }
+

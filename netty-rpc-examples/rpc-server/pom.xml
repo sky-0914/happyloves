@@ -43,6 +43,11 @@
             <artifactId>netty-rpc</artifactId>
             <version>0.0.1</version>
         </dependency>
+        <dependency>
+            <groupId>cn.happyloves.netty.rpc.examples.api</groupId>
+            <artifactId>rpc-api</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
