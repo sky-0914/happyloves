@@ -1,43 +1,26 @@
 package cn.happyloves.h2db.service;
 
-import cn.happyloves.h2db.entity.Account;
-import cn.happyloves.rpc.api.Test1Api;
-import cn.happyloves.rpc.client.RpcServer;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
  * @author ZC
  * @date 2021/3/1 21:14
  */
+@Slf4j
 @Service
-@RpcServer
-public class TestService implements Test1Api {
-    public void test11() {
-        System.out.println("TEST");
+public class TestService {
+
+    @Autowired
+    private AccountService accountService;
+
+
+    public TestService() {
+        System.out.println("TestService-构造方法");
     }
 
-    @Override
     public void test() {
-        System.out.println("111111111");
+        System.out.println("TestService=====》》》》》test()");
     }
-
-    @Override
-    public void test(int id, String name) {
-        System.out.println("222222222 " + id + " " + name);
-    }
-
-    @Override
-    public String testStr(int id) {
-        System.out.println("33333333333333333 " + id);
-        return "33333333333333333 " + id;
-    }
-
-    @Override
-    public Object testObj() {
-        System.out.println("444444444444444444");
-        Account account = new Account();
-        account.setName("张三");
-        return account;
-    }
-
 }

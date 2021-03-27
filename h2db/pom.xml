@@ -47,11 +47,6 @@
             </exclusions>
         </dependency>
 
-        <dependency>
-            <groupId>cn.happyloves.rpc</groupId>
-            <artifactId>netty-rpc</artifactId>
-            <version>0.0.1</version>
-        </dependency>
     </dependencies>
 
     <dependencyManagement>

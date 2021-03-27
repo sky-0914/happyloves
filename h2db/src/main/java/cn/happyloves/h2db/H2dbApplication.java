@@ -1,10 +1,8 @@
 package cn.happyloves.h2db;
 
-import cn.happyloves.rpc.server.EnableNettyServer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@EnableNettyServer
 @SpringBootApplication
 public class H2dbApplication {
 

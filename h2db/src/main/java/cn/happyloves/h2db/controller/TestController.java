@@ -1,5 +1,6 @@
 package cn.happyloves.h2db.controller;
 
+import cn.happyloves.h2db.service.AccountService;
 import cn.happyloves.h2db.service.TestService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.BeanFactory;
@@ -8,8 +9,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.concurrent.*;
 
 /**
  * @author zc
@@ -25,8 +24,9 @@ public class TestController {
     @Autowired
     private BeanFactory factory;
 
+
     @GetMapping("/")
-    public void test() {
+    public void a() {
         TestService bean = context.getBean(TestService.class);
         System.out.println(bean);
         Object test = context.getBean("testService");
@@ -36,46 +36,14 @@ public class TestController {
         System.out.println(test1);
     }
 
+    @Autowired
+    private TestService testService;
+    @Autowired
+    private AccountService accountService;
 
-    public static void main(String[] args) throws ExecutionException, InterruptedException {
-
-        CompletableFuture<String> voidCompletableFuture1 = CompletableFuture.supplyAsync(() -> {
-            log.info("voidCompletableFuture1");
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            return "voidCompletableFuture1";
-        });
-        CompletableFuture<String> voidCompletableFuture2 = CompletableFuture.supplyAsync(() -> {
-            log.info("bbbb--->");
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            throw new RuntimeException("lalala!");
-        });
-
-        log.info("123");
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        log.info("456");
-//        CompletableFuture.anyOf(voidCompletableFuture1, voidCompletableFuture2).join();
-        String s = voidCompletableFuture1.get();
-        log.info("voidCompletableFuture1===>>>{}",s);
-        String s1 = voidCompletableFuture2.get();
-        log.info("voidCompletableFuture2===>>>{}",s1);
-
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        log.info("789");
+    @GetMapping("/test")
+    public void test() {
+        testService.test();
+        accountService.test();
     }
 }
