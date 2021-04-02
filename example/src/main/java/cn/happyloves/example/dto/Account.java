@@ -1,9 +1,10 @@
 package cn.happyloves.example.dto;
 
 
-import com.google.common.collect.Lists;
 import lombok.Data;
 import org.openjdk.jol.info.ClassLayout;
+
+import java.util.ArrayList;
 
 /**
  * @author zc
@@ -16,7 +17,13 @@ public class Account {
     private String password;
 
     public static void main(String[] args) {
-        Object o = new Object();
-        System.out.println(ClassLayout.parseInstance(o).toPrintable());
+        Object o1 = new Object();
+        System.out.println("空对象：" + ClassLayout.parseInstance(o1).toPrintable());
+        Object o2 = new Account();
+        System.out.println("带属性对象：" + ClassLayout.parseInstance(o2).toPrintable());
+        Object o3 = new int[1];
+        System.out.println("数组：" + ClassLayout.parseInstance(o3).toPrintable());
+        Object o4 = new ArrayList<>();
+        System.out.println("空List：" + ClassLayout.parseInstance(o4).toPrintable());
     }
 }

@@ -35,12 +35,13 @@ public class ServerHandle extends SimpleChannelInboundHandler<RpcMessage> implem
      * @param applicationContext Spring上下文
      * @throws BeansException 异常信息
      */
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         //从Spring容器中获取到所有拥有@RpcServer注解的Beans集合，Map<Name（对象类型，对象全路径名）,实例对象>
         Map<String, Object> beansWithAnnotation = applicationContext.getBeansWithAnnotation(RpcServer.class);
         log.info("被@RpcServer注解加载的Bean: {}", beansWithAnnotation);
         if (beansWithAnnotation.size() > 0) {
-            Map<String, Object> map = new ConcurrentHashMap<String, Object>(16);
+            Map<String, Object> map = new ConcurrentHashMap<>(16);
             for (Object o : beansWithAnnotation.values()) {
                 //获取该实例对象实现的接口Class
                 Class<?> anInterface = o.getClass().getInterfaces()[0];
