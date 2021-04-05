@@ -48,7 +48,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>29.0-jre</version>
+            <version>30.1.1-jre</version>
         </dependency>
         <!-- 工具：JOL=JAVA Object Layout -->
         <dependency>
