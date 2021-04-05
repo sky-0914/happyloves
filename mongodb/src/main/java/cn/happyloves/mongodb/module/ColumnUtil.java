@@ -10,6 +10,7 @@ import java.lang.reflect.Method;
  * @date 2021/4/2 14:31
  */
 public class ColumnUtil {
+
     public static <T> String getName(SFunction<T, ?> fn) {
         // 从function取出序列化方法
         Method writeReplaceMethod;
@@ -41,9 +42,9 @@ public class ColumnUtil {
         }
 
         // 从field取出字段名，可以根据实际情况调整
-        TableField tableField = field.getAnnotation(TableField.class);
-        if (tableField != null && tableField.value().length() > 0) {
-            return tableField.value();
+        ColumnName columnName = field.getAnnotation(ColumnName.class);
+        if (columnName != null && columnName.value().length() > 0) {
+            return columnName.value();
         } else {
             return fieldName.replaceAll("[A-Z]", "_$0").toLowerCase();
         }
