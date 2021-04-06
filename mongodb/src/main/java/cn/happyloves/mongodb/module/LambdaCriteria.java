@@ -9,8 +9,6 @@ import org.springframework.data.mongodb.core.query.Criteria;
 
 import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +37,8 @@ public class LambdaCriteria<T> extends Criteria {
      * 当前实体类里的对应数据库列名
      */
     private String columnName;
+
+    private List<String> columnList;
     /**
      * 当前实体类里的子节点属性
      */
@@ -64,8 +64,10 @@ public class LambdaCriteria<T> extends Criteria {
     }
 
     public Criteria lambdaWhere() {
-        assert StringUtils.isNotBlank(columnName) : "列名不能为空";
-        return Criteria.where(this.getColumn());
+        if (this.columnList.isEmpty()) {
+            throw new RuntimeException("列名不能为空");
+        }
+        return Criteria.where(StringUtils.join(this.columnList, "."));
     }
 
     public Criteria lambdaWhere(SFunction<T, ?> fn) {
@@ -87,8 +89,8 @@ public class LambdaCriteria<T> extends Criteria {
      * @param son 子列值
      * @return 返回值
      */
-    public LambdaCriteria<?> addSon(LambdaCriteria<?> son) {
-        LambdaCriteria.setParentSon(this, son);
+    public LambdaCriteria<T> addSon(LambdaCriteria<?> son) {
+        ColumnUtil.setParentSon(this, son);
         return this;
     }
 
@@ -98,44 +100,11 @@ public class LambdaCriteria<T> extends Criteria {
      * @return 返回值
      */
     public String getColumn() {
-        List<String> columnNames = new ArrayList<>();
-        columnNames.add(this.getColumnName());
-        LambdaCriteria.getColumnName(this, columnNames);
-        return StringUtils.join(columnNames, ".");
+        return StringUtils.join(this.columnList, ".");
     }
 
-    /**
-     * 静态方法-设置子列值
-     *
-     * @param parent 父
-     * @param son    子
-     */
-    public static void setParentSon(LambdaCriteria<?> parent, LambdaCriteria<?> son) {
-        if (parent.getSonLambdaCriteria() != null) {
-            //递归
-            setParentSon(parent.getSonLambdaCriteria(), son);
-        } else {
-            parent.setSonLambdaCriteria(son);
-        }
-    }
-
-    /**
-     * 静态方法-获取字段名
-     *
-     * @param parent      父
-     * @param columnNames 字段名集合
-     */
-    public static void getColumnName(LambdaCriteria<?> parent, List<String> columnNames) {
-        LambdaCriteria<?> son = parent.getSonLambdaCriteria();
-        if (son != null) {
-            final Class<?> fieldType = parent.field.getType();
-            //当父字段类型与子实体类，类型不匹配
-            assert fieldType == son.getEntityType() : fieldType + " & " + son.getEntityType() + ", 父字段类型与子实体类型不匹配";
-            columnNames.add(son.getColumnName());
-            //递归
-            getColumnName(son, columnNames);
-        }
-    }
+    public static final String GET_PREFIX = "get";
+    public static final String IS_PREFIX = "is";
 
     /**
      * 初始化对象信息
@@ -143,42 +112,35 @@ public class LambdaCriteria<T> extends Criteria {
      * @param fn 函数式接口
      */
     private void init(SFunction<T, ?> fn, boolean isHump) {
-        // 从function取出序列化方法
-        Method writeReplaceMethod;
-        try {
-            writeReplaceMethod = fn.getClass().getDeclaredMethod("writeReplace");
-        } catch (NoSuchMethodException e) {
-            throw new RuntimeException(e);
+        SerializedLambda serializedLambda = ColumnUtil.serializedLambda(fn);
+        String methodName = serializedLambda.getImplMethodName();
+        String prefix;
+        if (methodName.startsWith(GET_PREFIX)) {
+            prefix = GET_PREFIX;
+        } else if (methodName.startsWith(IS_PREFIX)) {
+            prefix = IS_PREFIX;
+        } else {
+            throw new RuntimeException("无效的getter方法: " + methodName);
         }
-
-        // 从序列化方法取出序列化的lambda信息
-        boolean isAccessible = writeReplaceMethod.isAccessible();
-        writeReplaceMethod.setAccessible(true);
-        SerializedLambda serializedLambda;
-        try {
-            serializedLambda = (SerializedLambda) writeReplaceMethod.invoke(fn);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
-        writeReplaceMethod.setAccessible(isAccessible);
-
         // 从lambda信息取出method、field、class等
-        String fieldName = serializedLambda.getImplMethodName().substring("get".length());
-        fieldName = fieldName.replaceFirst(fieldName.charAt(0) + "", (fieldName.charAt(0) + "").toLowerCase());
+        String fName = serializedLambda.getImplMethodName().substring(prefix.length());
+        fName = fName.replaceFirst(fName.charAt(0) + "", (fName.charAt(0) + "").toLowerCase());
         try {
             this.entityType = Class.forName(serializedLambda.getImplClass().replace("/", "."));
-            this.field = this.entityType.getDeclaredField(fieldName);
-            this.fieldName = fieldName;
+            this.field = this.entityType.getDeclaredField(fName);
+            this.fieldName = fName;
         } catch (ClassNotFoundException | NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
         // 从field取出字段名，可以根据实际情况调整
-        ColumnName columnName = field.getAnnotation(ColumnName.class);
-        if (columnName != null && StringUtils.isNotBlank(columnName.value())) {
-            this.columnName = columnName.value();
+        ColumnName cName = field.getAnnotation(ColumnName.class);
+        if (cName != null && StringUtils.isNotBlank(cName.value())) {
+            this.columnName = cName.value();
         } else {
             //是否是驼峰，三元表达式
-            this.columnName = isHump ? fieldName : fieldName.replaceAll("[A-Z]", "_$0").toLowerCase();
+            this.columnName = isHump ? this.fieldName : this.fieldName.replaceAll("[A-Z]", "_$0").toLowerCase();
         }
+        this.columnList = new ArrayList<>();
+        this.columnList.add(this.columnName);
     }
 }

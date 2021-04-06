@@ -3,7 +3,6 @@ package cn.happyloves.mongodb;
 import cn.happyloves.mongodb.module.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.mongodb.core.query.Criteria;
 
 import java.util.function.Function;
 
@@ -36,10 +35,13 @@ class MongodbApplicationTests {
 //        System.out.println(c2);
 
 
-        final LambdaCriteria<Account> accountLambdaCriteria = new LambdaCriteria<>(Account::getTestA);
-        final LambdaCriteria<TestA> testALambdaCriteria = new LambdaCriteria<>(TestA::getTestB);
-        final LambdaCriteria<TestC> testCLambdaCriteria = new LambdaCriteria<>(TestC::getTestC);
-        accountLambdaCriteria.addSon(testALambdaCriteria).addSon(testCLambdaCriteria);
+        LambdaCriteria<Account> accountLambdaCriteria = new LambdaCriteria<>(Account::getAccountInfo);
+        LambdaCriteria<Account>accountLambdaCriteriaa = new LambdaCriteria<>(Account::getTestA);
+        LambdaCriteria<TestA> testALambdaCriteria = new LambdaCriteria<>(TestA::getTestB);
+        LambdaCriteria<TestC> testCLambdaCriteria = new LambdaCriteria<>(TestC::getTestC);
+        accountLambdaCriteria = accountLambdaCriteria.addSon(accountLambdaCriteriaa);
+        accountLambdaCriteria = accountLambdaCriteria.addSon(testALambdaCriteria);
+//        accountLambdaCriteria = accountLambdaCriteria.addSon(testCLambdaCriteria);
         System.out.println(accountLambdaCriteria.getColumn());
 
 //        final LambdaCriteria<?> lambdaCriteria = new LambdaCriteria<>(Account::getAccount).addSon(new LambdaCriteria<>(Account::getUsername));
