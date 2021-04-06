@@ -38,6 +38,9 @@ public class LambdaCriteria<T> extends Criteria {
      */
     private String columnName;
 
+    /**
+     * 所有字段集合
+     */
     private List<String> columnList;
     /**
      * 当前实体类里的子节点属性
@@ -112,8 +115,11 @@ public class LambdaCriteria<T> extends Criteria {
      * @param fn 函数式接口
      */
     private void init(SFunction<T, ?> fn, boolean isHump) {
+        //获取序列化Lambda对象
         SerializedLambda serializedLambda = ColumnUtil.serializedLambda(fn);
+        //获取方法名
         String methodName = serializedLambda.getImplMethodName();
+        //判断方法名前缀
         String prefix;
         if (methodName.startsWith(GET_PREFIX)) {
             prefix = GET_PREFIX;
@@ -123,7 +129,7 @@ public class LambdaCriteria<T> extends Criteria {
             throw new RuntimeException("无效的getter方法: " + methodName);
         }
         // 从lambda信息取出method、field、class等
-        String fName = serializedLambda.getImplMethodName().substring(prefix.length());
+        String fName = methodName.substring(prefix.length());
         fName = fName.replaceFirst(fName.charAt(0) + "", (fName.charAt(0) + "").toLowerCase());
         try {
             this.entityType = Class.forName(serializedLambda.getImplClass().replace("/", "."));

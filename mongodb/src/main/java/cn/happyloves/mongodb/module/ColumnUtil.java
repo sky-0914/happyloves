@@ -1,6 +1,6 @@
 package cn.happyloves.mongodb.module;
 
-import com.sun.istack.internal.NotNull;
+import lombok.NonNull;
 
 import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.Field;
@@ -64,7 +64,7 @@ public class ColumnUtil {
      * @param parent 父
      * @param son    子
      */
-    public static void setParentSon(@NotNull LambdaCriteria<?> parent, @NotNull LambdaCriteria<?> son) {
+    public static void setParentSon(@NonNull LambdaCriteria<?> parent, @NonNull LambdaCriteria<?> son) {
         parent.getColumnList().add(son.getColumnName());
         if (parent.getSonLambdaCriteria() != null) {
             //递归
@@ -73,7 +73,7 @@ public class ColumnUtil {
             //获取父字段类型
             final Class<?> fieldType = parent.getField().getType();
             //当父字段类型与子实体类，类型不匹配
-            if(fieldType != son.getEntityType()){
+            if (fieldType != son.getEntityType()) {
                 throw new RuntimeException(fieldType + " & " + son.getEntityType() + ", 父字段类型与子实体类型不匹配");
             }
 //            assert fieldType == son.getEntityType() : fieldType + " & " + son.getEntityType() + ", 父字段类型与子实体类型不匹配";
@@ -81,20 +81,4 @@ public class ColumnUtil {
             parent.setSonLambdaCriteria(son);
         }
     }
-//
-//    /**
-//     * 静态方法-获取字段名
-//     *
-//     * @param parent      父
-//     * @param columnNames 字段名集合
-//     */
-//    public static void getColumnName(LambdaCriteria<?> parent, List<String> columnNames) {
-//        LambdaCriteria<?> son = parent.getSonLambdaCriteria();
-//        if (son != null) {
-//
-//            columnNames.add(son.getColumnName());
-//            //递归
-//            getColumnName(son, columnNames);
-//        }
-//    }
 }
