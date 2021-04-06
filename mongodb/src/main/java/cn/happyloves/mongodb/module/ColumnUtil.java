@@ -22,6 +22,9 @@ public class ColumnUtil {
 
         // 从序列化方法取出序列化的lambda信息
         boolean isAccessible = writeReplaceMethod.isAccessible();
+        //isAccessible()值为 true 则指示反射的对象在使用时应该取消 Java 语言访问检查。值为 false 则指示反射的对象应该实施 Java 语言访问检查。
+        //实际上setAccessible是启用和禁用访问安全检查的开关,并不是为true就能访问为false就不能访问
+        //由于JDK的安全检查耗时较多.所以通过setAccessible(true)的方式关闭安全检查就可以达到提升反射速度的目的
         writeReplaceMethod.setAccessible(true);
         SerializedLambda serializedLambda;
         try {
