@@ -1,5 +1,7 @@
 package cn.happyloves.mongodb;
 
+import cn.happyloves.mongodb.lambda.Lmcw;
+import cn.happyloves.mongodb.module.OrderInfo;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -12,8 +14,7 @@ class MongodbApplicationTests {
     }
 
     public static void main(String[] args) {
-
-//        final LambdaCriteria<OrderInfo> orderInfoLambdaCriteria = new LambdaCriteria<OrderInfo>();
+        System.out.println(Lmcw.create(OrderInfo::getId));
     }
 
 }

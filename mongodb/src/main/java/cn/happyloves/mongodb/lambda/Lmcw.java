@@ -15,13 +15,14 @@ import java.util.List;
 import java.util.function.Function;
 
 /**
- * 条件构造器
+ * LambdaMongoColumnWrapper
+ * 莱姆达Mongo字段包装器
  *
  * @author ZC
  * @date 2021/4/2 14:16
  */
 @Slf4j
-public class LambdaCriteria<T> {
+public class Lmcw<T> {
 
     /**
      * 当前实体类型
@@ -42,10 +43,10 @@ public class LambdaCriteria<T> {
     /**
      * 当前实体类里的子节点属性
      */
-    private LambdaCriteria<?> sonLambdaCriteria;
+    private Lmcw<?> sonLambdaCriteria;
 
-    public static <T> LambdaCriteria<T> create(MongoFunction<T, ?> fn) {
-        return new LambdaCriteria<>(fn);
+    public static <T> Lmcw<T> create(MongoFunction<T, ?> fn) {
+        return new Lmcw<>(fn);
     }
 
     /**
@@ -53,7 +54,7 @@ public class LambdaCriteria<T> {
      *
      * @param fn 函数式接口
      */
-    private LambdaCriteria(MongoFunction<T, ?> fn) {
+    private Lmcw(MongoFunction<T, ?> fn) {
         this(fn, false);
     }
 
@@ -63,7 +64,7 @@ public class LambdaCriteria<T> {
      * @param fn     函数式结构
      * @param isHump 是否驼峰
      */
-    private LambdaCriteria(MongoFunction<T, ?> fn, boolean isHump) {
+    private Lmcw(MongoFunction<T, ?> fn, boolean isHump) {
         this.init(fn, isHump);
     }
 
@@ -73,8 +74,8 @@ public class LambdaCriteria<T> {
      * @param son 子列值
      * @return 返回值
      */
-    public LambdaCriteria<T> son(LambdaCriteria<?> son) {
-        LambdaCriteria.setParentSon(this, son);
+    public Lmcw<T> son(Lmcw<?> son) {
+        Lmcw.setParentSon(this, son);
         return this;
     }
 
@@ -98,7 +99,7 @@ public class LambdaCriteria<T> {
      */
     private void init(MongoFunction<T, ?> fn, boolean isHump) {
         //获取序列化Lambda对象
-        SerializedLambda serializedLambda = LambdaCriteria.serializedLambda(fn);
+        SerializedLambda serializedLambda = Lmcw.serializedLambda(fn);
         //获取方法名
         String methodName = serializedLambda.getImplMethodName();
         //判断方法名前缀
@@ -170,7 +171,7 @@ public class LambdaCriteria<T> {
      * @param parent 父
      * @param son    子
      */
-    public static void setParentSon(@NonNull LambdaCriteria<?> parent, @NonNull LambdaCriteria<?> son) {
+    public static void setParentSon(@NonNull Lmcw<?> parent, @NonNull Lmcw<?> son) {
         parent.columnList.add(son.columnName);
         if (parent.sonLambdaCriteria != null) {
             //递归

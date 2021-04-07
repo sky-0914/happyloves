@@ -27,7 +27,6 @@ public class Server {
 
         serverBootstrap.group(boss, worker)
                 .channel(NioServerSocketChannel.class)
-                .option()
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
