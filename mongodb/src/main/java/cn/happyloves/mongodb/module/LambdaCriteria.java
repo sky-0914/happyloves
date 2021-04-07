@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * 条件构造器
  * @author ZC
  * @date 2021/4/2 14:16
  */
