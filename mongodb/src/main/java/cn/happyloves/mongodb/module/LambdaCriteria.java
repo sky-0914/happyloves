@@ -47,6 +47,8 @@ public class LambdaCriteria<T> extends Criteria {
      */
     private LambdaCriteria<?> sonLambdaCriteria;
 
+    private Criteria criteria;
+
     /**
      * 构造方法
      *
@@ -54,6 +56,11 @@ public class LambdaCriteria<T> extends Criteria {
      */
     public LambdaCriteria(SFunction<T, ?> fn) {
         this.init(fn, false);
+    }
+
+    public Criteria getCriteria() {
+        this.criteria = Criteria.where(StringUtils.join(this.columnList, "."));
+        return this.criteria;
     }
 
     /**
@@ -70,20 +77,43 @@ public class LambdaCriteria<T> extends Criteria {
         if (this.columnList.isEmpty()) {
             throw new RuntimeException("列名不能为空");
         }
-        return Criteria.where(StringUtils.join(this.columnList, "."));
+        return this.getCriteria();
     }
 
+//    public Criteria lambdaWhere(SFunction<T, ?> fn) {
+//        return Criteria.where(ColumnUtil.getName(fn));
+//    }
+
     public Criteria lambdaWhere(SFunction<T, ?> fn) {
-        return Criteria.where(ColumnUtil.getName(fn));
+        LambdaCriteria<T> lambdaCriteria = new LambdaCriteria<>(fn);
+        return this.getCriteria();
     }
+
+//    @SafeVarargs
+//    public final Criteria lambdaWhere(SFunction<T, ?>... fns) {
+//        List<String> columns = new ArrayList<>();
+//        for (SFunction<T, ?> fn : fns) {
+//            columns.add(ColumnUtil.getName(fn));
+//        }
+//        return Criteria.where(StringUtils.join(columns, "."));
+//    }
 
     @SafeVarargs
     public final Criteria lambdaWhere(SFunction<T, ?>... fns) {
-        List<String> columns = new ArrayList<>();
+        LambdaCriteria<T> lambdaCriteria = null;
         for (SFunction<T, ?> fn : fns) {
-            columns.add(ColumnUtil.getName(fn));
+            if (lambdaCriteria == null) {
+                lambdaCriteria = new LambdaCriteria<>(fn);
+            } else {
+                lambdaCriteria.addSon(new LambdaCriteria<>(fn));
+            }
         }
-        return Criteria.where(StringUtils.join(columns, "."));
+        return this.getCriteria();
+    }
+
+    public Criteria and(SFunction<T, ?> fn) {
+        LambdaCriteria<T> lambdaCriteria = new LambdaCriteria<>(fn);
+        return this.criteria.and(StringUtils.join(lambdaCriteria.columnList, "."));
     }
 
     /**
