@@ -49,6 +49,10 @@ public class LambdaCriteria<T> extends Criteria {
 
     private Criteria criteria;
 
+    public static <T> LambdaCriteria<T> create(SFunction<T, ?> fn) {
+        return new LambdaCriteria<>(fn);
+    }
+
     /**
      * 构造方法
      *

@@ -47,6 +47,7 @@ class MongodbApplicationTests {
 //        final LambdaCriteria<?> lambdaCriteria = new LambdaCriteria<>(Account::getAccount).addSon(new LambdaCriteria<>(Account::getUsername));
 //        System.out.println(lambdaCriteria.getColumn());
 
+//        LambdaCriteria.create(Account::getAccountInfo)
     }
 
 }
