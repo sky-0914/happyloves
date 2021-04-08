@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class Server {
+
     public static void main(String[] args) {
         NioEventLoopGroup boss = new NioEventLoopGroup(1);
         NioEventLoopGroup worker = new NioEventLoopGroup();
@@ -31,20 +32,24 @@ public class Server {
                     @Override
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
                         socketChannel.pipeline()
-                                .addLast(new StringDecoder())
                                 .addLast(new StringEncoder())
+                                .addLast(new StringDecoder())
                                 .addLast(new SimpleChannelInboundHandler<String>() {
                                     @Override
+                                    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+                                        log.info("客户端连接成功了，客户端地址：{}", ctx.channel().remoteAddress());
+                                    }
+
+                                    @Override
                                     protected void channelRead0(ChannelHandlerContext channelHandlerContext, String s) throws Exception {
-                                        log.info("服务端接收数据：{}", s);
-                                        channelHandlerContext.writeAndFlush("||||");
+                                        log.info("服务端接收到的数据：{}", s);
+                                        channelHandlerContext.writeAndFlush("heiheihei");
                                     }
                                 });
                     }
                 });
-
         ChannelFuture channelFuture = serverBootstrap.bind(8888).syncUninterruptibly();
-        channelFuture.channel().closeFuture();
-
+        channelFuture.channel().closeFuture().syncUninterruptibly();
     }
+
 }

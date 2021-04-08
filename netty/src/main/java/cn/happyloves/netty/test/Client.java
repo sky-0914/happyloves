@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class Client {
+
     public static void main(String[] args) {
         NioEventLoopGroup worker = new NioEventLoopGroup();
 
@@ -29,22 +30,25 @@ public class Client {
                     @Override
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
                         socketChannel.pipeline()
-                                .addLast(new StringDecoder())
                                 .addLast(new StringEncoder())
+                                .addLast(new StringDecoder())
                                 .addLast(new SimpleChannelInboundHandler<String>() {
                                     @Override
                                     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-                                        log.info("客户端连接成功");
-                                        ctx.writeAndFlush("123456789");
+                                        log.info("客户端连接成功啦");
+                                        ctx.writeAndFlush("hahaha");
                                     }
 
                                     @Override
                                     protected void channelRead0(ChannelHandlerContext channelHandlerContext, String s) throws Exception {
-                                        log.info("客户端接收数据：{}", s);
+                                        log.info("接收到服务端数据：{}", s);
                                     }
                                 });
                     }
                 });
+
         ChannelFuture channelFuture = bootstrap.connect("127.0.0.1", 8888).syncUninterruptibly();
+        channelFuture.channel().closeFuture();
     }
+
 }
