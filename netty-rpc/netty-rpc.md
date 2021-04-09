@@ -810,7 +810,7 @@ public class TestServiceImpl implements Test1Api {
 }
 ```
 
-**最后再启动类上加上@EnableNettyServer**
+**最后在SpringBoot启动类上加上@EnableNettyServer**
 
 ```java
 /**

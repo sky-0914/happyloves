@@ -40,4 +40,8 @@ public class AccountController {
         return accountJPA.findAll();
     }
 
+    @GetMapping("/{id}")
+    public Account getOne(@PathVariable int id) {
+        return accountJPA.findById(id).orElse(null);
+    }
 }
