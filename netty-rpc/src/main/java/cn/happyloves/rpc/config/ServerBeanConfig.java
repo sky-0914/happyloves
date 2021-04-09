@@ -66,6 +66,7 @@ public class ServerBeanConfig {
             this.properties = properties;
         }
 
+        @Override
         public void run(ApplicationArguments args) throws Exception {
             log.info("===============ApplicationRunner");
             if (nettyServer != null) {

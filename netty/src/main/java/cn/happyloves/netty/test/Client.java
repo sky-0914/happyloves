@@ -8,6 +8,9 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.serialization.ClassResolvers;
+import io.netty.handler.codec.serialization.ObjectDecoder;
+import io.netty.handler.codec.serialization.ObjectEncoder;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import lombok.extern.slf4j.Slf4j;
@@ -20,28 +23,35 @@ import lombok.extern.slf4j.Slf4j;
 public class Client {
 
     public static void main(String[] args) {
+        //设置客户端工作线程
         NioEventLoopGroup worker = new NioEventLoopGroup();
-
+        //创建客户端启动对象
         Bootstrap bootstrap = new Bootstrap();
-
         bootstrap.group(worker)
+                //通道连接者
                 .channel(NioSocketChannel.class)
+                //给worker线程组初始化处理器
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
                         socketChannel.pipeline()
-                                .addLast(new StringEncoder())
+                                //添加字符串的编解码器
                                 .addLast(new StringDecoder())
-                                .addLast(new SimpleChannelInboundHandler<String>() {
+                                .addLast(new StringEncoder())
+                                //添加对象的编解码器，ClassResolvers.weakCachingConcurrentResolver设置弱引用WeakReferenceMap缓存类加载器，防止内存溢出
+                                .addLast(new ObjectDecoder(ClassResolvers.weakCachingConcurrentResolver(this.getClass().getClassLoader())))
+                                .addLast(new ObjectEncoder())
+                                //添加自定义的业务处理器
+                                .addLast(new SimpleChannelInboundHandler<Object>() {
+
                                     @Override
                                     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-                                        log.info("客户端连接成功啦");
-                                        ctx.writeAndFlush("hahaha");
+                                        ctx.writeAndFlush("哈哈哈");
                                     }
 
                                     @Override
-                                    protected void channelRead0(ChannelHandlerContext channelHandlerContext, String s) throws Exception {
-                                        log.info("接收到服务端数据：{}", s);
+                                    protected void channelRead0(ChannelHandlerContext channelHandlerContext, Object o) throws Exception {
+                                        log.info("客户端接收到的数据：{}", o.toString());
                                     }
                                 });
                     }

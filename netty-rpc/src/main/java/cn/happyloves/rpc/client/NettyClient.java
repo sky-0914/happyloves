@@ -25,12 +25,11 @@ import java.util.concurrent.ConcurrentMap;
 @Slf4j
 public class NettyClient {
 
-    private int port;
     private Channel channel;
     /**
      * 存放请求编号与响应对象的映射关系
      */
-    private final ConcurrentMap<Channel, RpcMessage> rpcMessageConcurrentMap = new ConcurrentHashMap<Channel, RpcMessage>();
+    private final ConcurrentMap<Channel, RpcMessage> rpcMessageConcurrentMap = new ConcurrentHashMap<>();
 
     public RpcMessage send(int port, final RpcMessage rpcMessage) {
         //客户端需要一个事件循环组
@@ -43,8 +42,6 @@ public class NettyClient {
                         @Override
                         protected void initChannel(SocketChannel socketChannel) throws Exception {
                             socketChannel.pipeline()
-//                                .addLast(new StringDecoder())
-//                                .addLast(new StringEncoder())
                                     .addLast(new ObjectDecoder(ClassResolvers.weakCachingConcurrentResolver(this.getClass().getClassLoader())))
                                     .addLast(new ObjectEncoder())
                                     .addLast(new ClientHandle(rpcMessageConcurrentMap));
@@ -57,7 +54,6 @@ public class NettyClient {
             log.info("发送数据成功：{}", rpcMessage);
             channel.closeFuture().syncUninterruptibly();
             return rpcMessageConcurrentMap.get(channel);
-
         } catch (Exception e) {
             log.error("client exception", e);
             return null;

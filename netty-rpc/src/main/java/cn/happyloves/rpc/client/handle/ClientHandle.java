@@ -15,53 +15,19 @@ import java.util.concurrent.ConcurrentMap;
  */
 @Slf4j
 @ChannelHandler.Sharable
-//public class ClientHandle extends SimpleChannelInboundHandler<RpcMessage> implements ApplicationContextAware {
 public class ClientHandle extends SimpleChannelInboundHandler<RpcMessage> {
-    private ConcurrentMap<Channel, RpcMessage> rpcMessageConcurrentMap;
+    /**
+     * 定义消息Map，将连接通道Channel作为key，消息返回值作为value
+     */
+    private final ConcurrentMap<Channel, RpcMessage> rpcMessageConcurrentMap;
 
     public ClientHandle(ConcurrentMap<Channel, RpcMessage> rpcMessageConcurrentMap) {
         this.rpcMessageConcurrentMap = rpcMessageConcurrentMap;
     }
 
-//    private <T> T getBean(Class<T> clazz) {
-//        return Proxy.newProxyInstance(clazz.getClassLoader(), new Class[]{clazz}, (proxy, method, args) -> {
-//
-//        });
-//    }
-//
-//    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-//        //获取所有被Spring容器加载的Bean
-//        final String[] beanDefinitionNames = applicationContext.getBeanDefinitionNames();
-//        for (String name : beanDefinitionNames) {
-//            //获取Bean的Class
-//            Class<?> clazz = applicationContext.getType(name);
-//            if (clazz != null) {
-//                //获取所有属性
-//                Field[] fields = clazz.getDeclaredFields();
-//                for (Field f : fields) {
-//                    //判断该属性是否有自定义注解
-//                    RpcServer rpcServer = f.getAnnotation(RpcServer.class);
-//                    if (rpcServer != null) {
-//                        //获取该属性的Class
-//                        Class<?> fieldClass = f.getType();
-//                        //获取对象
-//                        Object object = applicationContext.getBean(name);
-//                        f.setAccessible(true);
-//                        try {
-//                            f.set(object, clientProxyFactory.getProxy(fieldClass));
-//                        } catch (IllegalAccessException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                }
-//            }
-//
-//        }
-//    }
-
     @Override
     public void channelActive(ChannelHandlerContext channelHandlerContext) throws Exception {
-        System.out.println(channelHandlerContext.channel().remoteAddress());
+        log.info("当前客户端地址：{}", channelHandlerContext.channel().remoteAddress());
 //        for (int i = 0; i < 10; i++) {
 //            RpcMessage rpcMessage = new RpcMessage();
 //            rpcMessage.setName("cn.happyloves.rpc.api.Test1Api");

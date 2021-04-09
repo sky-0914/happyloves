@@ -34,6 +34,7 @@ public class NettyClientBeanPostProcessor implements BeanPostProcessor {
      * 如果返回null那么在后续初始化方法将报空指针异常或者通过getBean()方法获取不到Bean实例对象
      * 因为后置处理器从Spring IoC容器中取出bean实例对象没有再次放回IoC容器中
      */
+    @Override
     public Object postProcessBeforeInitialization(Object bean, @Nullable String beanName) throws BeansException {
         //获取实例Class
         Class<?> beanClass = bean.getClass();
@@ -65,23 +66,11 @@ public class NettyClientBeanPostProcessor implements BeanPostProcessor {
      * 如果返回null那么在后续初始化方法将报空指针异常或者通过getBean()方法获取不到Bean实例对象
      * 因为后置处理器从Spring IoC容器中取出bean实例对象没有再次放回IoC容器中
      */
+    @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         // 可以根据beanName不同执行不同的处理操作
         return bean;
     }
-
-    /**
-     * 实例化、依赖注入、初始化完毕时执行
-     * 注意：方法返回值不能为null
-     * 如果返回null那么在后续初始化方法将报空指针异常或者通过getBean()方法获取不到bena实例对象
-     * 因为后置处理器从Spring IoC容器中取出bean实例对象没有再次放回IoC容器中
-     */
-
-    /*private <T> T getBean(Class<T> clazz) {
-        return Proxy.newProxyInstance(clazz.getClassLoader(), new Class[]{clazz}, (proxy, method, args) -> {
-            //Netty
-        });
-    }*/
 
     /**
      * JDK动态代理处理器
@@ -101,6 +90,7 @@ public class NettyClientBeanPostProcessor implements BeanPostProcessor {
          * @param args   参数
          * @return 返回值
          */
+        @Override
         public Object invoke(Object proxy, Method method, Object[] args) {
             //组装Netty参数
             RpcMessage rpcMessage = RpcMessage.builder()
@@ -111,9 +101,8 @@ public class NettyClientBeanPostProcessor implements BeanPostProcessor {
                     .build();
             //调用Netty，发送数据
             RpcMessage send = nettyClient.send(1111, rpcMessage);
-            log.info("接收到服务端数据：{}", send);
+            log.info("接收到服务端数据：{}, 返回结果值 ====》》》》{}", send, send.getResult());
 //            log.info("====》》》》{}", JSONUtil.toBean(JSONUtil.parseObj(send.getResult()), method.getReturnType()));
-            log.info("====》》》》{}", send.getResult());
             return send.getResult();
         }
     }

@@ -23,13 +23,29 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class NettyServer {
 
-    private ServerHandle serverHandle;
+    /**
+     * server端处理器
+     */
+    private final ServerHandle serverHandle;
+    /**
+     * 服务端通道
+     */
     private Channel channel;
 
+    /**
+     * 构造器
+     *
+     * @param serverHandle server处理器
+     */
     public NettyServer(ServerHandle serverHandle) {
         this.serverHandle = serverHandle;
     }
 
+    /**
+     * 启动
+     *
+     * @param port 启动端口
+     */
     public void start(int port) {
         EventLoopGroup boss = new NioEventLoopGroup(1);
         EventLoopGroup worker = new NioEventLoopGroup();
@@ -59,6 +75,9 @@ public class NettyServer {
         }
     }
 
+    /**
+     * 关闭当前通道
+     */
     public void stop() {
         channel.close();
     }
