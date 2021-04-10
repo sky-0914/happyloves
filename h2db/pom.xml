@@ -46,7 +46,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
+        <!-- 打印sql日志依赖 -->
         <dependency>
             <groupId>org.bgee.log4jdbc-log4j2</groupId>
             <artifactId>log4jdbc-log4j2-jdbc4.1</artifactId>
