@@ -1,7 +1,8 @@
 # Netty-RPC
 
+[简单了解React线程模型，参考文章【五分钟快速理解 Reactor 模型】](https://mp.weixin.qq.com/s?__biz=MzU0MzQ5MDA0Mw==&mid=2247498294&idx=1&sn=02b4a2b660a39624c262afa2787e9199&chksm=fb0810a2cc7f99b42f79947ac9265f5cc5293c43f1c1a066a2160740b125ecf37e9cab8aa4f0&mpshare=1&scene=24&srcid=0401GgaijbBylFsB2QErhXje&sharer_sharetime=1617238455381&sharer_shareid=0a45e2c79c575c02b962eb13994476f7#rd)
 
-
+[举例说明：Reactor的三种线程模型](https://blog.csdn.net/a_bcd_123/article/details/103855769)
 ## 先实现简单的Netty通信
 
 ### 服务端示例
