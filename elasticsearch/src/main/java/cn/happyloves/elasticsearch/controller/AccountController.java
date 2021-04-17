@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.IndexOperations;
+import org.springframework.data.elasticsearch.core.document.Document;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -49,7 +50,7 @@ public class AccountController {
     public void createIndex() {
         Class<?> cls = Account.class;
         //====== 方式一
-        /*IndexOperations indexOperations = elasticsearchRestTemplate.indexOps(cls);
+        IndexOperations indexOperations = elasticsearchRestTemplate.indexOps(cls);
         //判断索引是否存在
         if (indexOperations.exists()) {
             log.info("存在索引");
@@ -59,17 +60,17 @@ public class AccountController {
         indexOperations.create();
         //创建mapping映射
         Document mapping = indexOperations.createMapping();
-        indexOperations.putMapping(mapping);*/
+        indexOperations.putMapping(mapping);
 
-        //====== 方式二
+        //====== 方式二，新版本已废弃
         //判断索引是否存在
-        if (elasticsearchRestTemplate.indexExists(cls)) {
+        /*if (elasticsearchRestTemplate.indexExists(cls)) {
             log.info("存在索引");
             elasticsearchRestTemplate.deleteIndex(cls);
         }
         //创建索引,mapping是{}
         elasticsearchRestTemplate.createIndex(cls);
         //创建映射
-        elasticsearchRestTemplate.putMapping(cls);
+        elasticsearchRestTemplate.putMapping(cls);*/
     }
 }

@@ -44,6 +44,7 @@ public class ChatClientNetty1 {
             ChannelFuture channelFuture = bootstrap.connect("127.0.0.1", 9999).syncUninterruptibly();
             //得到channel
             Channel channel = channelFuture.channel();
+
             System.out.println("--------" + channel.localAddress() + "---------");
             //客户端需要输入信息，创建一个扫描器
             Scanner scanner = new Scanner(System.in);
