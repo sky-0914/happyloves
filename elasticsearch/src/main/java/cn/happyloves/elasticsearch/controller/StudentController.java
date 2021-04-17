@@ -2,6 +2,7 @@ package cn.happyloves.elasticsearch.controller;
 
 import cn.happyloves.elasticsearch.model.Student;
 import cn.happyloves.elasticsearch.repository.StudentRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,10 +12,10 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/student")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class StudentController {
 
-    @Autowired
-    private StudentRepository repository;
+    private final StudentRepository repository;
 
     @PostMapping("/")
     public void save(@RequestBody Student student) {

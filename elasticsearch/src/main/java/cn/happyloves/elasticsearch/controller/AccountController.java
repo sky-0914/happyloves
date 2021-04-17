@@ -2,6 +2,7 @@ package cn.happyloves.elasticsearch.controller;
 
 import cn.happyloves.elasticsearch.model.Account;
 import cn.happyloves.elasticsearch.repository.AccountRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
@@ -19,12 +20,11 @@ import java.util.Date;
 @Slf4j
 @RestController
 @RequestMapping("/account")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class AccountController {
 
-    @Autowired
-    private AccountRepository repository;
-    @Autowired
-    private ElasticsearchRestTemplate elasticsearchRestTemplate;
+    private final AccountRepository repository;
+    private final ElasticsearchRestTemplate elasticsearchRestTemplate;
 
     @PostMapping("/")
     public void save(@RequestBody Account account) {
@@ -63,8 +63,8 @@ public class AccountController {
         indexOperations.putMapping(mapping);
 
         //====== 方式二，新版本已废弃
-        //判断索引是否存在
-        /*if (elasticsearchRestTemplate.indexExists(cls)) {
+        /*//判断索引是否存在
+        if (elasticsearchRestTemplate.indexExists(cls)) {
             log.info("存在索引");
             elasticsearchRestTemplate.deleteIndex(cls);
         }

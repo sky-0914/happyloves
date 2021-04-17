@@ -1,5 +1,6 @@
 package cn.happyloves.h2db.service;
 
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
@@ -27,8 +28,13 @@ public class AccountService implements ApplicationContextAware, InitializingBean
         System.out.println("AccountService=====》》》》》test()");
     }
 
+    /**
+     *
+     * @param applicationContext a
+     * @throws BeansException a
+     */
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
         log.info("ApplicationContextAware-setApplicationContext");
     }
 
