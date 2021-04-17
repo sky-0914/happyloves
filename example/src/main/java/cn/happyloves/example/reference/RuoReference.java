@@ -9,6 +9,8 @@ import java.lang.ref.WeakReference;
  * ThreadLocal类的静态内部类ThreadLocalMap的静态内部类Entry中的k,就是弱引用
  * <p>
  * 应用场景：ThreadLocal，@Transactional就是用ThreadLocal实现的
+ * 分析ThreadLocal的弱引用与内存溢出问题：http://www.likecs.com/show-108947.html
+ * <p>
  *
  * @author zc
  * @date 2021/1/15 13:12

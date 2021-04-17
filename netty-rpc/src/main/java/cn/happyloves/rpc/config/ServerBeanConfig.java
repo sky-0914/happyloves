@@ -48,6 +48,7 @@ public class ServerBeanConfig {
     @Bean
     public NettyServer nettyServer(ServerHandle handle) {
         NettyServer nettyServer = new NettyServer(handle);
+        //原先服务端想让这边在加载这个Bean的时候就启动，后来发现如果这个服务即当服务端又当客户端发现服务起不来
 //        nettyServer.start(nettyRpcProperties.getServerPort());
         return nettyServer;
     }
