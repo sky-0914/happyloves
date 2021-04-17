@@ -23,6 +23,7 @@
         <module>elasticsearch</module>
         <module>example</module>
         <module>h2db</module>
+        <module>kafka</module>
         <module>mongodb</module>
         <module>netty</module>
         <module>netty-rpc</module>
