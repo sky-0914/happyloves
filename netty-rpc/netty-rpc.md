@@ -892,7 +892,7 @@ public class TestServiceImpl implements Test1Api {
  * @author ZC
  * @date 2021/3/2 23:55
  */
-@EnableNetty
+@EnableNettyServer
 @SpringBootApplication
 public class RpcServerApplication {
     public static void main(String[] args) {
@@ -952,10 +952,10 @@ public class ClientController {
 }
 ```
 
-**最后在启动类上加上注解@EnableNetty**
+**最后在启动类上加上注解@EnableNettyClient**
 
 ```java
-@EnableNetty
+@EnableNettyClient
 @SpringBootApplication
 public class RpcClientApplication {
     public static void main(String[] args) {
