@@ -1,15 +1,32 @@
 # Netty-RPC
 
 ## 线程模型
+[Netty高性能架构设计](https://blog.csdn.net/qq_35751014/article/details/104443715)
+
 [简单了解React线程模型，参考文章【五分钟快速理解 Reactor 模型】](https://mp.weixin.qq.com/s?__biz=MzU0MzQ5MDA0Mw==&mid=2247498294&idx=1&sn=02b4a2b660a39624c262afa2787e9199&chksm=fb0810a2cc7f99b42f79947ac9265f5cc5293c43f1c1a066a2160740b125ecf37e9cab8aa4f0&mpshare=1&scene=24&srcid=0401GgaijbBylFsB2QErhXje&sharer_sharetime=1617238455381&sharer_shareid=0a45e2c79c575c02b962eb13994476f7#rd)
 
 [举例说明：Reactor的三种线程模型](https://blog.csdn.net/a_bcd_123/article/details/103855769)
 
-### 1、线程模型1：传统阻塞 I/O 服务模型
+### 线程模型1：传统阻塞 I/O 服务模型
 
 ![](https://i.loli.net/2021/04/16/CxDQeAHMsTa4cmF.png)
 
-### 2、线程模型2：Reactor 模式
+**模型特点：**
+
+- 采用阻塞`IO`模式获取输入的数据
+- 每个链接都需要独立的线程完成数据的输入，业务处理、数据返回。
+
+**问题分析：**
+
+- 当并发数很大，就会创建大量的线程，占用很大系统资源
+- 连接创建后，如果当前线程暂时没有数据可读，该线程会阻塞在`read`操作，造成线程资源浪费。
+
+### 线程模型2：Reactor 模式
+
+**针对传统阻塞I/O服务模型的2个缺点，解决方案如下：**
+
++ 基于 `I/O` 复用模型：多个连接共用一个阻塞对象，应用程序只需要在一个阻塞对象等待，无需阻塞等待所有连接。当某个连接有新的数据可以处理时，操作系统通知应用程序，线程从阻塞状态返回，开始进行业务处理。`Reactor `对应的叫法: 1. 反应器模式 2. 分发者模式(`Dispatcher`) 3. 通知者模式(`notifier`)
++ 基于线程池复用线程资源：不必再为每个连接创建线程，将连接完成后的业务处理任务分配给线程进行处理，一个线程可以处理多个连接的业务。
 
 ![](https://i.loli.net/2021/04/16/wZizHDsRVaTefg2.png)
 
@@ -17,13 +34,32 @@
 
 ![](https://i.loli.net/2021/04/16/gKbaNuUV2Gwoc4C.png)
 
+**模型分析**
+
++ **优点：**模型简单，没有多线程、进程通信、竞争的问题，全部都在一个线程中完成
++ **缺点：**性能问题，只有一个线程，无法完全发挥多核 CPU 的性能。Handler 在处理某个连接上的业务时，整个进程无法处理其他连接事件，很容易导致性能瓶颈
++ **缺点：**可靠性问题，线程意外终止，或者进入死循环，会导致整个系统通信模块不可用，不能接收和处理外部消息，造成节点故障
++ **使用场景：**客户端的数量有限，业务处理非常快速，比如 Redis在业务处理的时间复杂度 O(1) 的情况
+
 #### 单 Reactor 多线程
 
 ![](https://i.loli.net/2021/04/16/Lwrp6fHeCVPcnbx.png)
 
+**模型分析**
+
+- **优点**：可以充分的利用多核`cpu` 的处理能力
+- **缺点**：多线程数据共享和访问比较复杂， `reactor` 处理所有的事件的监听和响应，在单线程运行， 在高并发场景容易出现性能瓶颈.
+
 #### 主从 Reactor 多线程
 
 ![](https://i.loli.net/2021/04/16/RJ4TP3Zy5XhFkaB.png)
+
+**模型分析**
+
++ **优点：**父线程与子线程的数据交互简单职责明确，父线程只需要接收新连接，子线程完成后续的业务处理。
++ **优点：**父线程与子线程的数据交互简单，Reactor 主线程只需要把新连接传给子线程，子线程无需返回数据
++ **缺点：**编程复杂度较高
++ **结合实例：**这种模型在许多项目中广泛使用，包括 Nginx 主从 Reactor 多进程模型，Memcached 主从多线程，Netty 主从多线程模型的支持
 
 ## 先实现简单的Netty通信
 
@@ -61,7 +97,12 @@ public static void main(String[] args) {
                         @Override
                         protected void channelRead0(ChannelHandlerContext channelHandlerContext, Object o) throws Exception {
                             log.info("服务端接收到的数据：{}", o.toString());
-                            channelHandlerContext.writeAndFlush("嘿嘿嘿");
+                            //价值1个亿的AI代码
+                            String str = o.toString();
+                            str = str.replace("吗", "");
+                            str = str.replace("？", "！");
+                            str = str.replace("？ ", "！ ");
+                            channelHandlerContext.writeAndFlush(str);
                         }
                     });
             }
@@ -112,6 +153,13 @@ public static void main(String[] args) {
         });
 
     ChannelFuture channelFuture = bootstrap.connect("127.0.0.1", 8888).syncUninterruptibly();
+    //客户端需要输入信息，创建一个扫描器
+    Scanner scanner = new Scanner(System.in);
+    while (scanner.hasNextLine()) {
+        String msg = scanner.nextLine();
+        //通过channel发送到服务器端
+        channel.writeAndFlush(msg + "\r\n");
+    }
     channelFuture.channel().closeFuture();
 }
 ```
@@ -122,7 +170,11 @@ public static void main(String[] args) {
 
 > 好了，接下来就让我们进入正题，让我们利用我们所学的知识去实现自己一个简单的rpc框架吧
 
-简单说下RPC（Remote Procedure Call）远程过程调用，简单的理解是一个节点请求另一个节点提供的服务
+简单说下RPC（Remote Procedure Call）远程过程调用，简单的理解是一个节点请求另一个节点提供的服务。让两个服务之间调用就像调用本地方法一样。
+
+**RPC时序图：**
+
+![QQ截图20210421170511.png](https://i.loli.net/2021/04/21/Auh4FGsWdUJgqzY.png)
 
 **RPC流程：**
 
@@ -845,6 +897,69 @@ public class TestServiceImpl implements Test1Api {
 public class RpcServerApplication {
     public static void main(String[] args) {
         SpringApplication.run(RpcServerApplication.class, args);
+    }
+}
+```
+
+### rpc-server客户端
+
+**引入pom依赖**
+
+```xml
+<dependency>
+    <groupId>cn.happyloves.rpc</groupId>
+    <artifactId>netty-rpc</artifactId>
+    <version>0.0.1</version>
+</dependency>
+<dependency>
+    <groupId>cn.happyloves.netty.rpc.examples.api</groupId>
+    <artifactId>rpc-api</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+</dependency>
+```
+
+**创建Controller**
+
+```java
+/**
+ * @author ZC
+ * @date 2021/3/3 0:04
+ */
+@RestController
+public class ClientController {
+    @RpcServer
+    private Test1Api testServiceImpl;
+
+    @GetMapping("/test1")
+    public void test() {
+        testServiceImpl.test();
+    }
+
+    @GetMapping("/test2")
+    public void test(int id, String name) {
+        testServiceImpl.test(id, name);
+    }
+
+    @GetMapping("/test3")
+    public String testStr(int id) {
+        return testServiceImpl.testStr(id);
+    }
+
+    @GetMapping("/test4")
+    public Object testObj() {
+        return testServiceImpl.testObj();
+    }
+}
+```
+
+**最后在启动类上加上注解@EnableNetty**
+
+```java
+@EnableNetty
+@SpringBootApplication
+public class RpcClientApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(RpcClientApplication.class, args);
     }
 }
 ```
