@@ -13,3 +13,6 @@ spring:
     template:
       # 前提是publisher-returns需要先开启，此种方式在yml配置中定义spring.rabbit.template.mandatory=true 无效,必须在配置中rabbitTemplate.setMandatory(true);才生效
       mandatory: true #开启mandatory模式（开启失败回调）添加失败回调方法 rabbitTemplate.setReturnCallback();
+    listener:
+      simple:
+        prefetch: 0

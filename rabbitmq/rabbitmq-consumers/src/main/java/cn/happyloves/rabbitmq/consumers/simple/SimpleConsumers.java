@@ -58,8 +58,9 @@ public class SimpleConsumers {
      * @param map 消息
      */
     @RabbitListener(queues = SimpleConfig.SIMPLE_QUEUE_ONE_TO_MANY)
-    public void handlerMany0(Map map) {
+    public void handlerMany0(Map map, Message message, Channel channel) throws IOException {
         log.info("处理器：一对多-0， - Simple 消费者===>>>> {}", map);
+        channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
     }
 
     /**
@@ -68,7 +69,8 @@ public class SimpleConsumers {
      * @param map 消息
      */
     @RabbitListener(queues = SimpleConfig.SIMPLE_QUEUE_ONE_TO_MANY)
-    public void handlerMany1(Map map) {
+    public void handlerMany1(Map map, Message message, Channel channel) throws IOException {
         log.info("处理器：一对多-1， - Simple 消费者===>>>> {}", map);
+        channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
     }
 }

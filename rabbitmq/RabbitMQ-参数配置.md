@@ -51,6 +51,10 @@ spring.rabbitmq.listener.simple.auto-startup: true #是否启动时自动启动�
 spring.rabbitmq.listener.simple.acknowledge-mode: #表示消息确认方式，其有三种配置方式，分别是none、manual和auto；默认auto
 spring.rabbitmq.listener.simple.concurrency: #最小的消费者数量
 spring.rabbitmq.listener.simple.max-concurrency: #最大的消费者数量
+# 不同的消费者处理消息的速度可能不一样，消息可能在某一处理慢的消费者上积压，为了避免这一问题，提高吞吐量，Spring AMQP给消费者的缓冲大小进行了限制，大小设置为250，
+# 如果一个消费者有250个未确认的消息，就不再给他继续投递消息，而是给其他处理快的消费者。这个大小是可以通过spring.rabbitmq.listener.simple.prefetch配置的
+# 工作模式中, 为了合理地分发数据, 需要将 qos 设置成 1, 每次只接收一条消息, 处理完成后才接收下一条消息.
+# spring boot 中是通过 prefetch 属性进行设置, 改属性的默认值是 250.
 spring.rabbitmq.listener.simple.prefetch: #一个消费者最多可处理的nack消息数量，如果有事务的话，必须大于等于transaction数量.
 spring.rabbitmq.listener.simple.transaction-size: #当ack模式为auto时，一个事务（ack间）处理的消息数量，最好是小于等于prefetch的数量.若大于prefetch， 则prefetch将增加到这个值
 spring.rabbitmq.listener.simple.default-requeue-rejected: #决定被拒绝的消息是否重新入队；默认是true（与参数acknowledge-mode有关系）

@@ -10,6 +10,8 @@ spring:
         acknowledge-mode: manual # 设置消费端手动 ack,默认是auto
         retry:
           enabled: true # 是否支持重试
+#        prefetch: 3 #一个消费者最多可处理的nack消息数量，如果有事务的话，必须大于等于transaction数量.
+        prefetch: 0
       # 交换机
       direct:
         acknowledge-mode: manual # 设置消费端手动 ack,默认是auto
