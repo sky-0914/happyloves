@@ -22,6 +22,9 @@
 - 连接创建后，如果当前线程暂时没有数据可读，该线程会阻塞在`read`操作，造成线程资源浪费。
 
 ### 线程模型2：Reactor 模式
+> 1. Reactor模式，通过一个或多个输入同时传递给服务处理器的模式（基于事件驱动）
+> 2. 服务器端程序处理传入的多个请求，并将它们同步分派到相应的处理线程，因此Reactor模式也叫Dispatcher模式（分派模式）
+> 3. Reactor模式使用IO复用监听事件，收到事件后，分发给某个线程（进程），这点就是网络服务器高并发处理关键
 
 **针对传统阻塞I/O服务模型的2个缺点，解决方案如下：**
 
@@ -30,37 +33,138 @@
 
 ![](https://i.loli.net/2021/04/16/wZizHDsRVaTefg2.png)
 
-#### 单 Reactor 单线程
+ServiceHandler（Reactor）是个阻塞对象，去监听事件；此时工作线程池(业务处理线程)是空闲状态，当某个连接发送数据后，由ServiceHandler监听到相应的事件，再通过eventDispatch(事件分发)方法分派给工作线程池挑选空闲状态的线程去处理业务，处理完该客户端连接业务后回到空闲状态再等待新的客户端连接业务。
 
+**核心组成**
+1. Reactor: Reactor在一个单独的线程中运行，负责监听和分发事件，分发给适当的处理程序来对IO事件做出反应。它就像公司的电话接钱员，它接听来自客户的电话并将线路转移到适当的联系人。
+2. Handlers: 处理程序执行IO事件要完成的实际事件，类似于客户想要与之交谈的公司中的实际官员。Reactor通过调度适当的处理程序来响应I/O事件，处理程序执行非阻塞操作。
+
+#### 单 Reactor 单线程
 ![](https://i.loli.net/2021/04/16/gKbaNuUV2Gwoc4C.png)
+**方案说明：**
+
+> 1. Select是前面IO复用模型介绍的标准网络编程APl，可以实现应用程序通过一个阻塞对象监听多路连接请求
+> 2. Reactor对象通过Select监控客户端请求事件，收到事件后通过Dispatch进行分发
+> 3. 如果是建立连接请求事件，则由Acceptor通过Accept处理连接请求，然后创建一个Handler对象处理连接完成后的后续业务处理
+> 4. 如果不是建立连接事件，则Reactor会分发调用连接对应的Handler来响应
+> 5. Handler会完成Read→业务处理→Send的完整业务流程
+>
+> 结合实例：服务器端用一个线程通过多路复用搞定所有的IO操作（包括连接，读、写 等)，编码简单，清晰明了，但是如果客户端连接数量较多，将无法支撑，前面的IO案例就属于这种模型。
 
 **模型分析**
 
-+ **优点：**模型简单，没有多线程、进程通信、竞争的问题，全部都在一个线程中完成
-+ **缺点：**性能问题，只有一个线程，无法完全发挥多核 CPU 的性能。Handler 在处理某个连接上的业务时，整个进程无法处理其他连接事件，很容易导致性能瓶颈
-+ **缺点：**可靠性问题，线程意外终止，或者进入死循环，会导致整个系统通信模块不可用，不能接收和处理外部消息，造成节点故障
-+ **使用场景：**客户端的数量有限，业务处理非常快速，比如 Redis在业务处理的时间复杂度 O(1) 的情况
++ **优点：** 模型简单，没有多线程、进程通信、竞争的问题，全部都在一个线程中完成
++ **缺点：** 性能问题，只有一个线程，无法完全发挥多核 CPU 的性能。Handler 在处理某个连接上的业务时，整个进程无法处理其他连接事件，很容易导致性能瓶颈
++ **缺点：** 可靠性问题，线程意外终止，或者进入死循环，会导致整个系统通信模块不可用，不能接收和处理外部消息，造成节点故障
++ **使用场景：** 客户端的数量有限，业务处理非常快速，比如 Redis在业务处理的时间复杂度 O(1) 的情况
 
 #### 单 Reactor 多线程
-
 ![](https://i.loli.net/2021/04/16/Lwrp6fHeCVPcnbx.png)
+**方案说明：**
+> 1. Reactor对象通过select监控客户端请求事件，收到事件后，通过dispatch进行分发 
+> 2. Reactor对象如果接收到建立连接事件请求，则由Acceptor(接收器)通过accept方法处理连接请求，然后创建一个Handler对象处理完成连接后的各种事件业务
+> 3. Reactor对象如果不是连接事件请求，则由Reactor分发调用客户端连接对应的Handler来处理，此时Handler是持有客户端连接的channel
+> 4. Handler只负责响应事件，不做具体的业务处理，通过read方法读取数据后，会分发给后面的worker线程池的某个线程处理业务
+> 5. Worker线程池会分配独立线程完成真正的业务，并将结果返回给Handler
+> 6. Handler收到响应后，通过send方法将结果返回给client
 
 **模型分析**
 
 - **优点**：可以充分的利用多核`cpu` 的处理能力
-- **缺点**：多线程数据共享和访问比较复杂， `reactor` 处理所有的事件的监听和响应，在单线程运行， 在高并发场景容易出现性能瓶颈.
+- **缺点**：多线程数据共享和访问比较复杂， `reactor` 处理所有的事件的监听和响应请求，在单线程运行，在高并发场景容易出现性能瓶颈。
 
 #### 主从 Reactor 多线程
 
 ![](https://i.loli.net/2021/04/16/RJ4TP3Zy5XhFkaB.png)
 
+**方案说明：**
+
+> 1) Reactor主线程MainReactor对象通过select监听连接事件，收到事件后，通过Acceptor处理连接事件
+> 2) 当Acceptor处理连接事件后，MainReactor将连接分配给SubReactor
+> 3) SubReactor将连接加入到连接队列进行监听，并创建handler进行各种事件处理
+> 4) 当有新事件发生时，SubReactor就会调用对应的handler处理
+> 5) handler通过read读取数据，分发给后面的worker线程处理
+> 6) worker线程池分配独立的worker线程进行业务处理，并返回结果
+> 7) handler收到响应的结果后，再通过send将结果返回给client
+> 8) Reactor主线程可以对应多个Reactor子线程，即MainRecator可以关联多个SubReactor
+
 **模型分析**
 
-+ **优点：**父线程与子线程的数据交互简单职责明确，父线程只需要接收新连接，子线程完成后续的业务处理。
-+ **优点：**父线程与子线程的数据交互简单，Reactor 主线程只需要把新连接传给子线程，子线程无需返回数据
-+ **缺点：**编程复杂度较高
-+ **结合实例：**这种模型在许多项目中广泛使用，包括 Nginx 主从 Reactor 多进程模型，Memcached 主从多线程，Netty 主从多线程模型的支持
++ **优点：** 父线程与子线程的数据交互简单职责明确，父线程只需要接收新连接，子线程完成后续的业务处理。
++ **优点：** 父线程与子线程的数据交互简单，Reactor 主线程只需要把新连接传给子线程，子线程无需返回数据
++ **缺点：** 编程复杂度较高
++ **结合实例：** 这种模型在许多项目中广泛使用，包括 Nginx 主从 Reactor 多进程模型，Memcached 主从多线程，Netty 主从多线程模型的支持
 
+#### Netty模型
+
+> 参考文档：https://blog.csdn.net/qq_35751014/article/details/104443715
+
+![](https://s2.loli.net/2022/07/10/W7AFDhwqPUBkH3a.png)
+
+> 1. Netty抽象出两组线程池，BossGroup专门负责接收客户端的连接，WorkerGroup专门负责网络的读写。BossGroup和WorkerGroup类型的本质都是NioEventLoopGroup类型。
+> 2. NioEventLoopGroup相当于一个线程管理器（类似于ExecutorServevice），它下面维护很多个NioEventLoop线程。
+>    1. 在初始化这两个BossGroup和WorkerGroup线程组时，默认会在每个Group中生成CPU*2个NioEventLoop线程数
+>    2. 当n个连接来了，Group默认会按照连接请求的顺序分别将这些连接分给各个NioEventLoop去处理。
+>    3. 同时Group还负责管理EventLoop的生命周期。
+> 3. NioEventLoop表示一个不断循环的执行处理任务的线程
+>    1. 它维护了一个线程和任务队列。
+>    2. 每个NioEventLoop都包含一个Selector，用于监听绑定在它上面的socket通讯。
+>    3. 每个NioEventLoop相当于Selector，负责处理多个Channel上的事件
+>    4. 每增加一个请求连接，NioEventLoopGroup就将这个请求依次分发给它下面的NioEventLoop处理。
+> 4. 每个`Boss NioEventLoop`循环执行的步骤有3步：
+>    1. 轮询`accept`事件
+>    2. 处理`accept`事件，与`client`建立连接，生成`NioSocketChannel`，并将其注册到某个`Worker NioEventLoop`的`selector`上。
+>    3. 处理任务队列到任务，即`runAllTasks`
+> 5. 每个`Worker NioEventLoop`循环执行的步骤：
+>    1. 轮询`read`，`write`事件
+>    2. 处理`I/O`事件，即`read`，`write`事件，在对应的`NioSocketChannel`中进行处理
+>    3. 处理任务队列的任务，即`runAllTasks`
+> 6. 每个 Worker NioEventLoop处理业务时，会使用pipeline（管道），pipeline中维护了一个ChannelHandlerContext链表，而ChannelHandlerContext则保存了Channel相关的所有上下文信息，同时关联一个ChannelHandler对象。如图所示，Channel和pipeline一一对应，ChannelHandler和ChannelHandlerContext一一对应。
+
+![](https://s2.loli.net/2022/07/10/tHMvpfXlJQF8Tsj.png)
+
+> 7. `ChannelHandler`是一个接口，负责处理或拦截`I/O`操作，并将其转发到`Pipeline`中的下一个处理`Handler`进行处理。
+
+                                                     I/O Request
+                                                via Channel or
+                                            ChannelHandlerContext
+                                                          |
+      +---------------------------------------------------+---------------+
+      |                           ChannelPipeline         |               |
+      |                                                  \|/              |
+      |    +---------------------+            +-----------+----------+    |
+      |    | Inbound Handler  N  |            | Outbound Handler  1  |    |
+      |    +----------+----------+            +-----------+----------+    |
+      |              /|\                                  |               |
+      |               |                                  \|/              |
+      |    +----------+----------+            +-----------+----------+    |
+      |    | Inbound Handler N-1 |            | Outbound Handler  2  |    |
+      |    +----------+----------+            +-----------+----------+    |
+      |              /|\                                  .               |
+      |               .                                   .               |
+      | ChannelHandlerContext.fireIN_EVT() ChannelHandlerContext.OUT_EVT()|
+      |        [ method call]                       [method call]         |
+      |               .                                   .               |
+      |               .                                  \|/              |
+      |    +----------+----------+            +-----------+----------+    |
+      |    | Inbound Handler  2  |            | Outbound Handler M-1 |    |
+      |    +----------+----------+            +-----------+----------+    |
+      |              /|\                                  |               |
+      |               |                                  \|/              |
+      |    +----------+----------+            +-----------+----------+    |
+      |    | Inbound Handler  1  |            | Outbound Handler  M  |    |
+      |    +----------+----------+            +-----------+----------+    |
+      |              /|\                                  |               |
+      +---------------+-----------------------------------+---------------+
+                      |                                  \|/
+      +---------------+-----------------------------------+---------------+
+      |               |                                   |               |
+      |       [ Socket.read() ]                    [ Socket.write() ]     |
+      |                                                                   |
+      |  Netty Internal I/O Threads (Transport Implementation)            |
+      +-------------------------------------------------------------------+
+    
+    
 ## 先实现简单的Netty通信
 
 ### 服务端示例
