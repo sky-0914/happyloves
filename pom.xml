@@ -32,6 +32,7 @@
         <module>rabbitmq</module>
         <module>redis</module>
         <module>shardingsphere</module>
+        <module>spring-cloud-tencent</module>
     </modules>
 
 </project>
