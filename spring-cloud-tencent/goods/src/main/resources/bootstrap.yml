@@ -1,23 +1,22 @@
 spring:
   application:
-    name: order
+    name: goods
   cloud:
     tencent:
       metadata:
         content:
-#          featureenv: f1  # f1 替换为测试环境名称
 #          idc: nanjing-1
-#          env: order-dev1
+#          env: goods-dev1
           version: 1.0.0
-          name: order
-#        transitive: [ "idc", "env" ] # 指定透传的key
+          name: goods
+#          transitive: [ "idc", "env" ] # 指定透传的key
     polaris:
       address: grpc://183.47.111.80:8091
       namespace: zc
-      config:
-        groups:
-          - name: common
-            files: [ "common.yml" ]
+#      config:
+#        groups:
+#          - name: common
+#            files: [ "common.yml" ]
 
 #        address: grpc://183.47.111.80:8093 # 选填，只有在配置中心和注册中心是两个不同的地址时才需要配置
 #        auto-refresh: true # 选填，当配置发布后，动态刷新 Spring 上下文，默认值为 true

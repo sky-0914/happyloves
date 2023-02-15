@@ -1,0 +1,90 @@
+---
+code: 200000
+info: "execute success"
+type: "INSTANCE"
+service:
+  name: "order"
+  namespace: "zc"
+  metadata:
+    internal-auto-created: "true"
+  ports: ""
+  business: ""
+  department: ""
+  cmdb_mod1: ""
+  cmdb_mod2: ""
+  cmdb_mod3: ""
+  comment: ""
+  owners: "Polaris"
+  ctime: "2023-02-14 12:54:14"
+  mtime: "2023-02-14 12:54:14"
+  revision: "d19e44adcd9684d908d20d905273fa5a777da4f0"
+  platform_id: ""
+instances:
+- id: "05b9caf23165c9ffa1c20d0c632ea480a644f6dd"
+  service: "order"
+  namespace: "zc"
+  host: "192.168.1.211"
+  port: 2001
+  protocol: "http"
+  version: ""
+  priority: 0
+  weight: 100
+  healthCheck:
+    type: "HEARTBEAT"
+    heartbeat:
+      ttl: 5
+  healthy: true
+  isolate: false
+  location:
+    region: ""
+    zone: ""
+    campus: ""
+  metadata:
+    region: ""
+    campus: ""
+    env: "order-dev2"
+    idc: "nanjing-2"
+    protocol: "http"
+    version: "2.0.0"
+    zone: ""
+    internal-address: "192.168.1.211:2001"
+    internal-ip: "192.168.1.211"
+    name: "order"
+  logic_set: ""
+  mtime: "2023-02-15 20:13:34"
+  revision: "1f414c30d61642378b3092b9fdac7ede"
+  enableHealthCheck: true
+  vpc_id: ""
+- id: "78e605e0f2d94fbbf44bee77a92adb414c06cda5"
+  service: "order"
+  namespace: "zc"
+  host: "192.168.1.211"
+  port: 2000
+  protocol: "http"
+  version: ""
+  priority: 0
+  weight: 100
+  healthCheck:
+    type: "HEARTBEAT"
+    heartbeat:
+      ttl: 5
+  healthy: true
+  isolate: false
+  location:
+    region: ""
+    zone: ""
+    campus: ""
+  metadata:
+    region: ""
+    zone: ""
+    campus: ""
+    internal-address: "192.168.1.211:2000"
+    internal-ip: "192.168.1.211"
+    name: "order"
+    version: "1.0.0"
+    protocol: "http"
+  logic_set: ""
+  mtime: "2023-02-15 20:13:21"
+  revision: "14637c684d904c7f8409a5112a5404ef"
+  enableHealthCheck: true
+  vpc_id: ""

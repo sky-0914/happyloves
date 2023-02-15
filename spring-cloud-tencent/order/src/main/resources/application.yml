@@ -1,0 +1,9 @@
+order:
+  a: aaa
+  b: 123
+
+#logging:
+#  level:
+#    com:
+#      tencent:
+#        polaris: debug

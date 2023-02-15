@@ -1,0 +1,89 @@
+---
+code: 200000
+info: "execute success"
+type: "INSTANCE"
+service:
+  name: "goods"
+  namespace: "zc"
+  metadata:
+    internal-auto-created: "true"
+  ports: ""
+  business: ""
+  department: ""
+  cmdb_mod1: ""
+  cmdb_mod2: ""
+  cmdb_mod3: ""
+  comment: ""
+  owners: "Polaris"
+  ctime: "2023-02-15 14:57:13"
+  mtime: "2023-02-15 14:57:13"
+  revision: "5e08791a9f94eeb2a94bc8bce513856e2dcb054b"
+  platform_id: ""
+instances:
+- id: "894f6d7f9acb948f920169e77552bac813924437"
+  service: "goods"
+  namespace: "zc"
+  host: "192.168.1.211"
+  port: 1000
+  protocol: "http"
+  version: ""
+  priority: 0
+  weight: 100
+  healthCheck:
+    type: "HEARTBEAT"
+    heartbeat:
+      ttl: 5
+  healthy: true
+  isolate: false
+  location:
+    region: ""
+    zone: ""
+    campus: ""
+  metadata:
+    protocol: "http"
+    region: ""
+    zone: ""
+    campus: ""
+    internal-address: "192.168.1.211:1000"
+    internal-ip: "192.168.1.211"
+    name: "goods"
+    version: "1.0.0"
+  logic_set: ""
+  mtime: "2023-02-15 20:13:16"
+  revision: "c9f1d1ff390f4a95a3056f4894faad10"
+  enableHealthCheck: true
+  vpc_id: ""
+- id: "65e318d1e3ba94cb5e75d506ff21fe1cf2061e40"
+  service: "goods"
+  namespace: "zc"
+  host: "192.168.1.211"
+  port: 1001
+  protocol: "http"
+  version: ""
+  priority: 0
+  weight: 100
+  healthCheck:
+    type: "HEARTBEAT"
+    heartbeat:
+      ttl: 5
+  healthy: true
+  isolate: false
+  location:
+    region: ""
+    zone: ""
+    campus: ""
+  metadata:
+    protocol: "http"
+    zone: ""
+    idc: "nanjing-2"
+    internal-address: "192.168.1.211:1001"
+    internal-ip: "192.168.1.211"
+    name: "goods"
+    version: "2.0.0"
+    region: ""
+    campus: ""
+  logic_set: ""
+  mtime: "2023-02-15 20:13:38"
+  revision: "8a2b88b13ac04f64b3b5a18ac657d7ad"
+  enableHealthCheck: true
+  vpc_id: ""

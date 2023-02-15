@@ -1,16 +1,25 @@
 spring:
   application:
-    name: order
+    name: spring-cloud-gateway
   cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
     tencent:
+      plugin:
+        scg:
+          staining:
+            enabled: true
+            rule-staining:
+              enabled: true
       metadata:
         content:
-#          featureenv: f1  # f1 替换为测试环境名称
-#          idc: nanjing-1
-#          env: order-dev1
-          version: 1.0.0
-          name: order
-#        transitive: [ "idc", "env" ] # 指定透传的key
+          idc: nanjing
+          env: gateway-dev1
+          name: gateway
+        transitive: [ "idc", "env" ] # 指定透传的key
+        disposable: [ "name" ]
     polaris:
       address: grpc://183.47.111.80:8091
       namespace: zc
@@ -24,3 +33,9 @@ spring:
 #        groups:
 #          - name: ${spring.application.name} # 选填，注入自定义配置的配置分组
 #            files: [ "config/application.properties", "config/bootstrap.yml" ] # 注入自定义配置文件列表，当 key 冲突时，排在前面的配置文件优先级高于后面
+
+#logging:
+#  level:
+#    com:
+#      tencent:
+#        polaris: debug

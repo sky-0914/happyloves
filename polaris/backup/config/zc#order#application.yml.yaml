@@ -1,0 +1,7 @@
+---
+namespace: "zc"
+fileGroup: "order"
+fileName: "application.yml"
+content: "order:\n a: 111\n b: 222"
+version: 8
+md5: "942af8edf852f4844e8d64b0965865fb"

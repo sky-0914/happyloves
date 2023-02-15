@@ -37,5 +37,7 @@ public class ThreadTest {
 //        System.out.println(thread.getState());
 //        System.out.println(thread.getState());
 //        System.out.println(thread.getState());
+
+        new Thread().start();
     }
 }

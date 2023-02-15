@@ -1,0 +1,21 @@
+---
+code: 200000
+info: "execute success"
+type: "INSTANCE"
+service:
+  name: "yx"
+  namespace: "zc"
+  metadata:
+    internal-enable-nearby: "true"
+  ports: ""
+  business: "分"
+  department: "打"
+  cmdb_mod1: ""
+  cmdb_mod2: ""
+  cmdb_mod3: ""
+  comment: ""
+  owners: "438167613"
+  ctime: "2023-02-08 17:26:44"
+  mtime: "2023-02-08 17:26:44"
+  revision: "743b56280272aa01a74cc8846b69a46918370e99"
+  platform_id: ""

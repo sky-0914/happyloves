@@ -1,0 +1,7 @@
+---
+namespace: "zc"
+fileGroup: "common"
+fileName: "common.yml"
+content: "common:\n    name: 李四"
+version: 2
+md5: "6f3530262594b8689ab6db7eb8b69279"

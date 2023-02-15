@@ -1,0 +1,17 @@
+---
+code: 200000
+info: "execute success"
+type: "SERVICES"
+service:
+  name: ""
+  namespace: "zc"
+  revision: ""
+services:
+- name: "order"
+  namespace: "zc"
+- name: "spring-cloud-gateway"
+  namespace: "zc"
+- name: "yx"
+  namespace: "zc"
+- name: "goods"
+  namespace: "zc"

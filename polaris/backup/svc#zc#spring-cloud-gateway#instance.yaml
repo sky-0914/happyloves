@@ -1,0 +1,56 @@
+---
+code: 200000
+info: "execute success"
+type: "INSTANCE"
+service:
+  name: "spring-cloud-gateway"
+  namespace: "zc"
+  metadata:
+    internal-auto-created: "true"
+  ports: ""
+  business: ""
+  department: ""
+  cmdb_mod1: ""
+  cmdb_mod2: ""
+  cmdb_mod3: ""
+  comment: ""
+  owners: "Polaris"
+  ctime: "2023-02-13 19:28:18"
+  mtime: "2023-02-13 19:28:18"
+  revision: "014042a8851e97cdb7836485d71ee8f1c075205b"
+  platform_id: ""
+instances:
+- id: "280476767764ad5a9f2bc0c5c921d0630c5a714d"
+  service: "spring-cloud-gateway"
+  namespace: "zc"
+  host: "192.168.1.211"
+  port: 8080
+  protocol: "http"
+  version: ""
+  priority: 0
+  weight: 100
+  healthCheck:
+    type: "HEARTBEAT"
+    heartbeat:
+      ttl: 5
+  healthy: true
+  isolate: false
+  location:
+    region: ""
+    zone: ""
+    campus: ""
+  metadata:
+    campus: ""
+    internal-address: "192.168.1.211:8080"
+    internal-ip: "192.168.1.211"
+    protocol: "http"
+    zone: ""
+    env: "gateway-dev1"
+    idc: "nanjing"
+    name: "gateway"
+    region: ""
+  logic_set: ""
+  mtime: "2023-02-15 20:13:03"
+  revision: "ca751fd6adcf4d82af806f94620481b5"
+  enableHealthCheck: true
+  vpc_id: ""

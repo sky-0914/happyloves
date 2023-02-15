@@ -1,0 +1,302 @@
+---
+code: 200000
+info: "execute success"
+type: "ROUTING"
+service:
+  name: "yx"
+  namespace: "zc"
+  revision: "2b253d9f9d7593fc69d58dbd23d6770d4c03f647"
+routing:
+  service: "yx"
+  namespace: "zc"
+  inbounds:
+  - sources:
+    - service: "*"
+      namespace: "grayrelease"
+    destinations:
+    - service: "yx"
+      namespace: "zc"
+      metadata:
+        xx:
+          value: "xx"
+      priority: 0
+      weight: 100
+      transfer: ""
+      isolate: false
+  - sources:
+    - service: "featureenv-gateway"
+      namespace: "default"
+    destinations:
+    - service: "yx"
+      namespace: "zc"
+      priority: 0
+      weight: 100
+      transfer: ""
+      isolate: false
+  outbounds:
+  - sources:
+    - service: "yx"
+      namespace: "zc"
+    destinations:
+    - service: "*"
+      namespace: "mytry"
+      metadata:
+        ssss:
+          value: "1000"
+      priority: 0
+      weight: 100
+      transfer: ""
+      isolate: false
+  - sources:
+    - service: "yx"
+      namespace: "zc"
+      metadata:
+        $path.$path:
+          value: "hello"
+        $header.version:
+          value: "v1"
+    destinations:
+    - service: "test-service"
+      namespace: "soberTest"
+      metadata:
+        path:
+          value: "hello"
+        version:
+          value: "v1"
+      priority: 0
+      weight: 100
+      transfer: ""
+      isolate: false
+  - sources:
+    - service: "yx"
+      namespace: "zc"
+      metadata:
+        $query.name:
+          value: "zhangsan"
+    destinations:
+    - service: "RouterCallerService"
+      namespace: "default"
+      metadata:
+        label1:
+          value: "value2"
+      priority: 0
+      weight: 100
+      transfer: ""
+      isolate: false
+  - sources:
+    - service: "yx"
+      namespace: "zc"
+      metadata:
+        ${http.query.name}:
+          value: "zhangsan"
+    destinations:
+    - service: "RouterCalleeService"
+      namespace: "default"
+      metadata:
+        label1:
+          value: "value2"
+      priority: 0
+      weight: 100
+      transfer: ""
+      isolate: false
+  - sources:
+    - service: "yx"
+      namespace: "zc"
+      metadata:
+        $header.uid:
+          value: "mesh"
+    destinations:
+    - service: "RouteEchoServer"
+      namespace: "default"
+      metadata:
+        env:
+          value: "pre"
+      priority: 0
+      weight: 100
+      transfer: ""
+      isolate: true
+  - sources:
+    - service: "yx"
+      namespace: "zc"
+      metadata:
+        $header.uid:
+          value: "user-1"
+    destinations:
+    - service: "providers:org.apache.dubbo.UserProvider.Test"
+      namespace: "dubbogo"
+      metadata:
+        environment:
+          value: "pre"
+      priority: 0
+      weight: 100
+      transfer: ""
+      isolate: false
+  - sources:
+    - service: "yx"
+      namespace: "zc"
+      metadata:
+        $header.uid:
+          value: "user-2"
+    destinations:
+    - service: "providers:org.apache.dubbo.UserProvider.Test"
+      namespace: "dubbogo"
+      metadata:
+        environment:
+          value: "dev"
+      priority: 0
+      weight: 100
+      transfer: ""
+      isolate: false
+  - sources:
+    - service: "yx"
+      namespace: "zc"
+    destinations:
+    - service: "featureenv-gateway"
+      namespace: "default"
+      priority: 0
+      weight: 100
+      transfer: ""
+      isolate: false
+  - sources:
+    - service: "yx"
+      namespace: "zc"
+      metadata:
+        $query.name:
+          value: "lisi"
+    destinations:
+    - service: "sct-quickstart-callee"
+      namespace: "default"
+      metadata:
+        group:
+          value: "g2"
+      priority: 0
+      weight: 100
+      transfer: ""
+      isolate: false
+  - sources:
+    - service: "yx"
+      namespace: "zc"
+      metadata:
+        $header.user:
+          value: "archer"
+    destinations:
+    - service: "org.apache.dubbo.demo.DemoService"
+      namespace: "default"
+      metadata:
+        version:
+          value: "2.0.0"
+      priority: 0
+      weight: 100
+      transfer: ""
+      isolate: false
+  - sources:
+    - service: "yx"
+      namespace: "zc"
+      metadata:
+        $header.user:
+          value: "archer"
+    destinations:
+    - service: "org.apache.dubbo.demo.NextService"
+      namespace: "default"
+      metadata:
+        version:
+          value: "2.0.0"
+      priority: 0
+      weight: 100
+      transfer: ""
+      isolate: false
+  - sources:
+    - service: "yx"
+      namespace: "zc"
+      metadata:
+        efae:
+          value: "wearf"
+    destinations:
+    - service: "*"
+      namespace: "test-name"
+      metadata:
+        dshgsrt:
+          value: "dgreg"
+      priority: 1
+      weight: 100
+      transfer: ""
+      isolate: false
+  - sources:
+    - service: "yx"
+      namespace: "zc"
+    destinations:
+    - service: "mm-service-admin"
+      namespace: "mm-test"
+      metadata:
+        QQ群:
+          value: "qwd"
+      priority: 0
+      weight: 100
+      transfer: ""
+      isolate: false
+  - sources:
+    - service: "yx"
+      namespace: "zc"
+    destinations:
+    - service: "providers:org.apache.dubbo.UserProvider.Test"
+      namespace: "dubbogo"
+      metadata:
+        environment:
+          value: "prod"
+      priority: 0
+      weight: 100
+      transfer: ""
+      isolate: false
+  - sources:
+    - service: "yx"
+      namespace: "zc"
+    destinations:
+    - service: "test-ut"
+      namespace: "default"
+      metadata:
+        az:
+          value: "1"
+      priority: 1
+      weight: 100
+      transfer: ""
+      isolate: false
+  - sources:
+    - service: "yx"
+      namespace: "zc"
+    destinations:
+    - service: "test-ut"
+      namespace: "default"
+      metadata:
+        az:
+          value: "1"
+      priority: 1
+      weight: 100
+      transfer: ""
+      isolate: false
+  - sources:
+    - service: "yx"
+      namespace: "zc"
+    destinations:
+    - service: "test-ut"
+      namespace: "default"
+      metadata:
+        az:
+          value: "1"
+      priority: 1
+      weight: 100
+      transfer: ""
+      isolate: false
+  - sources:
+    - service: "yx"
+      namespace: "zc"
+    destinations:
+    - service: "test-ut"
+      namespace: "default"
+      metadata:
+        az:
+          value: "1"
+      priority: 1
+      weight: 100
+      transfer: ""
+      isolate: false
+  revision: "2b253d9f9d7593fc69d58dbd23d6770d4c03f647"

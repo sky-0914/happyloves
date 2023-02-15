@@ -1,0 +1,13 @@
+---
+namespace: "zc"
+fileGroup: "spring-cloud-gateway"
+fileName: "rule/staining.json"
+content: "{\n    \"rules\": [\n        {\n            \"conditions\": [\n        \
+  \        {\n                    \"key\": \"${http.query.uid}\",\n              \
+  \      \"values\": [\n                        \"1\"\n                    ],\n  \
+  \                  \"operation\": \"EQUALS\"\n                }\n            ],\n\
+  \            \"labels\": [\n                {\n                    \"key\": \"featureenv\"\
+  ,\n                    \"value\": \"f1\"\n                }\n            ]\n   \
+  \     }\n    ]\n}"
+version: 1
+md5: "7c6905fbfa4642b54de2595c79d6d29f"
